@@ -271,12 +271,36 @@ final governmentPolicies = [
 ];
 
 final contractGuideItems = [
-  {'title': '근로계약서는 반드시 서면으로', 'desc': '구두 계약은 분쟁 시 증명 불가. 계약서 사본은 내가 보관해야 합니다.', 'important': true},
-  {'title': '4대 보험 가입 여부 확인', 'desc': '국민연금, 건강보험, 고용보험, 산재보험. 10인 미만 사업장도 의무 가입.', 'important': true},
-  {'title': '임금 항목 세부 확인', 'desc': '기본급, 수당, 상여금 등 항목별 금액이 명시되어야 합니다.', 'important': false},
-  {'title': '근로시간 및 휴게시간', 'desc': '주 40시간 + 연장수당. 4시간 근무 시 30분, 8시간 시 1시간 휴게.', 'important': false},
-  {'title': '수습 기간과 급여', 'desc': '수습 3개월은 최저임금의 90%까지 지급 가능 (단, 단순노무직 제외).', 'important': false},
-  {'title': '퇴직금 규정', 'desc': '1년 이상 근무, 주 15시간 이상 시 퇴직금 발생. 퇴직 후 14일 이내 지급.', 'important': false},
+  {
+    'title': '근로 시작 전 서면 작성 & 교부',
+    'desc': '근로계약서는 출근 당일까지 반드시 서면(또는 전자문서)으로 작성하고 1부를 받아 보관해야 합니다. 미작성 시 500만원 이하 벌금이 부과됩니다.',
+    'important': true
+  },
+  {
+    'title': '6대 필수 기재 항목 확인',
+    'desc': '①계약기간 ②근무장소 ③업무내용 ④근로/휴게시간 ⑤임금(기본급·상여금·지급일) ⑥휴일·연차가 명시되어 있는지 확인하세요.',
+    'important': true
+  },
+  {
+    'title': '법 미달 조건 작성 시 독소조항 무효',
+    'desc': '최저임금 미달 등 법 기준보다 불리하게 작성된 조항은 무효가 되며, 해당 부분은 근로기준법 기준이 자동으로 적용됩니다.',
+    'important': true
+  },
+  {
+    'title': '2026 최저임금 & 주휴수당 확인',
+    'desc': '2026년 최저시급은 10,320원(월급 환산 2,156,880원)입니다. 주 15시간 이상 근무 시 유급 주휴수당도 반드시 지급받아야 합니다.',
+    'important': false
+  },
+  {
+    'title': '수습기간 최저임금 감액 조건',
+    'desc': '수습기간 최저임금 10% 감액(최대 3개월)은 1년 이상 계약 시에만 가능하며, 단순노무직은 감액이 불가능합니다.',
+    'important': false
+  },
+  {
+    'title': '임금체불 및 부당처우 대처법',
+    'desc': '임금 체불 시 고용노동부(1350) 신고가 가능하며, 국가가 대신 체불 임금을 지급하는 \'간이대지급금(최대 1,000만원)\' 제도를 활용할 수 있습니다.',
+    'important': false
+  },
 ];
 
 final jobCategories = [
@@ -1432,7 +1456,7 @@ class _EmploymentTabState extends State<EmploymentTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BackButton2(label: '취업', onTap: () => setState(() => _activeSection = null)),
-        const SectionHeader(title: '근로계약서 가이드', subtitle: '서명 전, 이것만은 꼭 확인하세요'),
+        const SectionHeader(title: '근로계약서 가이드', subtitle: '서명 전 핵심 법률 체크포인트'),
         ...contractGuideItems.map((item) {
           final important = item['important'] as bool;
           return Padding(
@@ -1469,6 +1493,8 @@ class _EmploymentTabState extends State<EmploymentTab> {
             ),
           );
         }),
+        
+        // 조사 자료(최저임금, 임금체불 신고, 간이대지급금) 안내 배너
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -1479,9 +1505,9 @@ class _EmploymentTabState extends State<EmploymentTab> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: const [
-              Text('💡 이럴 때는 고용노동부에 신고하세요', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF9A3412))),
+              Text('💡 임금체불 시 대처법 & 간이대지급금', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF9A3412))),
               SizedBox(height: 6),
-              Text('근로계약서 미작성, 임금 체불, 부당해고 시 고용노동부 (1350) 또는 고용24 앱에서 신고 가능합니다.', style: TextStyle(fontSize: 12, color: Color(0xFFC2410C), height: 1.5)),
+              Text('임금을 받지 못했다면 관할 고용노동관서 또는 1350으로 신고하세요.\n체불 확인 시 국가가 사업주 대신 최대 1,000만원(재직자 700만원)까지 지급해 주는 \'간이대지급금\' 제도를 신청할 수 있습니다.', style: TextStyle(fontSize: 12, color: Color(0xFFC2410C), height: 1.5)),
             ],
           ),
         ),

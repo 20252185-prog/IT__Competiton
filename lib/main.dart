@@ -179,12 +179,42 @@ final housingTerms = [
 ];
 
 final cheongyakSteps = [
-  {'step': '01', 'title': '청약통장 개설', 'desc': '주택청약종합저축 — 만 19세 이상 누구나 개설 가능. 1인 1계좌.', 'highlight': true},
-  {'step': '02', 'title': '납입 횟수 쌓기', 'desc': '매월 2만~50만 원 납입. 공공주택은 납입 횟수, 민영주택은 납입금액이 중요.', 'highlight': false},
-  {'step': '03', 'title': '청약 자격 확인', 'desc': '무주택 여부, 세대원 수, 소득 기준을 청약홈(applyhome.co.kr)에서 확인.', 'highlight': false},
-  {'step': '04', 'title': '분양 공고 확인', 'desc': '청약홈 공고 확인 후 청약 일정, 분양가, 타입 비교.', 'highlight': false},
-  {'step': '05', 'title': '청약 신청', 'desc': '모바일 또는 은행 창구에서 청약 신청. 당첨 시 계약금 준비.', 'highlight': false},
-  {'step': '06', 'title': '당첨 후 대출 준비', 'desc': '디딤돌 대출, 버팀목 대출 등 정부 저금리 상품 확인.', 'highlight': false},
+  {
+    'step': '01',
+    'title': '청약통장 개설 (청년주택드림)',
+    'desc': '만 19세~34세, 연소득 5천만 원 이하라면 최대 연 4.5% 금리의 \'청년주택드림 청약통장\' 가입을 추천합니다.',
+    'highlight': true
+  },
+  {
+    'step': '02',
+    'title': '매월 꾸준한 금액 납입',
+    'desc': '공공분양은 월 납입 인정액(최대 25만 원)과 횟수가 중요하며, 민영주택은 지역별 예치금액 기준 충족이 필요합니다.',
+    'highlight': false
+  },
+  {
+    'step': '03',
+    'title': '청약 자격 및 가점 확인',
+    'desc': '청약홈(applyhome.co.kr)에서 무주택기간, 부양가족 수, 통장 가입기간에 따른 본인의 청약 가점을 사전 조회하세요.',
+    'highlight': false
+  },
+  {
+    'step': '04',
+    'title': '입주자 모집공고 분석',
+    'desc': '분양가, 전매제한, 실거주의무, 특별공급(신혼·신생아·다자녀 등) 자격 요건을 꼼꼼히 체크하세요.',
+    'highlight': false
+  },
+  {
+    'step': '05',
+    'title': '청약홈 온라인 신청',
+    'desc': '모바일 앱이나 Web 청약홈에서 인증서 로그인 후 신청합니다. 부부인 경우 동일 주택에 개별 중복 신청도 가능합니다.',
+    'highlight': false
+  },
+  {
+    'step': '06',
+    'title': '당첨 후 계약 및 대출',
+    'desc': '당첨 시 청년주택드림대출 등 저금리 정책 대출 상품을 적극 활용하여 계약금과 잔금을 준비하세요.',
+    'highlight': false
+  },
 ];
 
 // ✨ [직접 조사하신 대표 정부 지원금 3가지 전용 데이터]
@@ -1021,67 +1051,134 @@ GridMenuCard(
   }
 
   Widget _buildCheongyak() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        BackButton2(label: '자산', onTap: () => setState(() => _activeSection = null)),
-        const SectionHeader(title: '청약 가이드', subtitle: '내 집 마련 첫 걸음, 청약통장부터 시작'),
-        ...cheongyakSteps.map((step) {
-          final highlight = step['highlight'] as bool;
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: highlight ? kPrimary : kCard,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: highlight ? kPrimary : kBorder),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('STEP ${step['step']}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: highlight ? Colors.white38 : kMutedFg, fontFamily: 'monospace')),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(step['title'] as String, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: highlight ? Colors.white : kForeground)),
-                        const SizedBox(height: 4),
-                        Text(step['desc'] as String, style: TextStyle(fontSize: 12, color: highlight ? Colors.white70 : kMutedFg, height: 1.5)),
-                      ],
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      BackButton2(label: '자산', onTap: () => setState(() => _activeSection = null)),
+      const SectionHeader(
+        title: '청약 가이드', 
+        subtitle: '내 집 마련의 첫걸음, 청약통장 활용법부터 신청까지'
+      ),
+      
+      // 단계별 청약 가이드 목록
+      ...cheongyakSteps.map((step) {
+        final highlight = step['highlight'] as bool;
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: highlight ? kPrimary : kCard,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: highlight ? kPrimary : kBorder),
+              boxShadow: highlight 
+                  ? [BoxShadow(color: kPrimary.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 3))]
+                  : [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4)],
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: highlight ? Colors.white.withOpacity(0.2) : kSecondary,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    'STEP ${step['step']}', 
+                    style: TextStyle(
+                      fontSize: 11, 
+                      fontWeight: FontWeight.w700, 
+                      color: highlight ? Colors.white : kPrimary, 
+                      fontFamily: 'monospace'
                     ),
                   ),
-                ],
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        step['title'] as String, 
+                        style: TextStyle(
+                          fontSize: 14, 
+                          fontWeight: FontWeight.w700, 
+                          color: highlight ? Colors.white : kForeground
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        step['desc'] as String, 
+                        style: TextStyle(
+                          fontSize: 12, 
+                          color: highlight ? Colors.white70 : kMutedFg, 
+                          height: 1.5
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }),
+      
+      const SizedBox(height: 6),
+
+      // 개편 포인트 팁 박스 1: 부부 중복 청약
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEFF6FF),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFBFDBFE)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Icon(Icons.info_outline, size: 18, color: Color(0xFF2563EB)),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                '부부 개별 청약 가능: 부부가 동일한 아파트 단지에 동시에 청약을 넣어도 모두 무효 처리되지 않으며, 둘 다 당첨될 경우 먼저 신청한 건이 인정됩니다.',
+                style: TextStyle(fontSize: 12, color: Color(0xFF1E3A8A), height: 1.5, fontWeight: FontWeight.w500),
               ),
             ),
-          );
-        }),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: const Color(0xFFEFF6FF),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFBFDBFE)),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Icon(Icons.shield_outlined, size: 16, color: Color(0xFF2563EB)),
-              SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  '무주택 기간이 길수록 유리합니다. 청약 점수는 무주택 기간, 부양가족 수, 청약통장 가입 기간으로 결정됩니다.',
-                  style: TextStyle(fontSize: 12, color: Color(0xFF1E3A8A), height: 1.5),
-                ),
-              ),
-            ],
-          ),
+          ],
         ),
-        const SizedBox(height: 16),
-      ],
-    );
-  }
+      ),
+      
+      const SizedBox(height: 10),
+
+      // 개편 포인트 팁 박스 2: 청년주택드림 대출 연계
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF0FDF4),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFBBF7D0)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Icon(Icons.stars_outlined, size: 18, color: Color(0xFF16A34A)),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                '청년주택드림통장 당첨 혜택: 통장에 1년 이상 가입하고 1,000만 원 이상 납입 실적이 있으면, 당첨 시 최저 2.2%대 금리의 전용 대출(청년주택드림대출)을 지원받을 수 있습니다.',
+                style: TextStyle(fontSize: 12, color: Color(0xFF14532D), height: 1.5, fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+        ),
+      ),
+      
+      const SizedBox(height: 16),
+    ],
+  );
+}
 
   // ✨ [수정된 대표 정부 지원금 3선 전용 화면]
   Widget _buildPolicy() {

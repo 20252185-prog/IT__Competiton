@@ -1,0 +1,1949 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+// ─── Theme Colors ──────────────────────────────────────────────
+const Color kBackground = Color(0xFFF5F7FA);
+const Color kForeground = Color(0xFF0E1B2A);
+const Color kCard = Color(0xFFFFFFFF);
+const Color kPrimary = Color(0xFF1A3F6F);
+const Color kAccent = Color(0xFF2468B2);
+const Color kMuted = Color(0xFFEEF1F6);
+const Color kMutedFg = Color(0xFF6B7A91);
+const Color kBorder = Color(0x1F1A3F6F);
+const Color kSecondary = Color(0xFFEBF0F7);
+
+// ─── Data ──────────────────────────────────────────────────────
+final contractTips = [
+  {
+    'title': '임대인 신분 대조',
+    'desc': '계약 당사자의 신분증과 등기부등본상 소유자가 일치하는지 직접 대조하세요.',
+    'tag': '필수'
+  },
+  {
+    'title': '금액 및 계약 기간 기재',
+    'desc': '보증금, 월세 금액, 납부일, 계약 기간을 한글과 숫자로 명확히 표기하세요.',
+    'tag': '필수'
+  },
+  {
+    'title': '집주인 명의 계좌로 입금',
+    'desc': '계약금과 잔금은 반드시 등기부등본상 소유자 명의 계좌로 이체하세요.',
+    'tag': '필수'
+  },
+  {
+    'title': '관리비 포함 항목 확인',
+    'desc': '관리비에 수도, 인터넷, 청소비 등이 어디까지 포함되어 있는지 구체적으로 확인하세요.',
+    'tag': '권장'
+  },
+  {
+    'title': '입주 전 하자 수리 특약',
+    'desc': '입주 전 발견된 하자의 수리 책임 및 완료 시점을 특약사항에 명시하세요.',
+    'tag': '권장'
+  },
+];
+
+final checklistItems = [
+  '수압·온수 상태 및 변기 물 빠짐 확인',
+  '벽면·천장 누수 흔적 및 곰팡이 유무',
+  '환기 가능 구조 및 방음 상태 (가벽 여부)',
+  '바퀴벌레 등 벌레 자국 및 흔적 확인',
+  '쓰레기 및 재활용 배출 장소/방법 확인',
+  '건물 종류 확인 (다가구 vs 다세대 구분)',
+  '등기부등본 표제부 주소와 계약 집 주소 일치 여부',
+  '등기부등본 갑구 소유자와 계약 상대방 동일 여부',
+  '등기부등본 갑구 가압류·압류·경매 위험 표시 유무',
+  '등기부등본 을구 근저당(채권최고액) + 보증금 < 시세 70~80% 여부',
+  '다가구의 경우 선순위 보증금 규모 확인 (전입세대 열람)',
+  '계약금·잔금을 등기부상 소유자 명의 계좌로 송금',
+  '잔금/입주 직전 등기부등본 재확인 (신규 대출 유무)',
+  '입주 직후 전입신고 + 확정일자 받기 (대항력·우선변제권 확보)',
+];
+
+final List<String> troubleshootingCategories = ['층간소음', '보일러/가스', '냄새/위생'];
+
+final troubleshootingItems = [
+  {
+    'category': '층간소음',
+    'icon': '🔊',
+    'title': '층간소음 대처법',
+    'steps': [
+      '대면 항의 시 주거침입·협박죄 성립 주의 (전화·문자 또는 대화를 통한 해결 권장)',
+      '관리사무소, 임대사업자 등 관리 주체에게 도움 요청 (소음 중단 권고)',
+      '지자체 층간소음 상담실(ex. 서울시 층간소음 상담실) 이용',
+      '국가소음정보시스템 \'층간소음 이웃사이센터\' 전문 상담 신청',
+      '해결되지 않을 경우 소음 측정 자료를 통해 환경분쟁조정위원회 또는 공동주택관리 분쟁조정위원회(30일 소요) 조정 신청',
+    ],
+  },
+  {
+    'category': '보일러/가스',
+    'icon': '🔥',
+    'title': '보일러 난방이 되지 않을 때',
+    'steps': [
+      '전원, 난방 모드, 희망 온도(현재 온도보다 높게) 설정 확인',
+      '외출/예약 모드 해제 및 각 방 난방 밸브(분배기) 열림 상태 확인',
+      '희망 온도를 높인 후 10~20분 대기 (지속될 경우 관리사무소·집주인·AS센터 문의)',
+    ],
+  },
+  {
+    'category': '보일러/가스',
+    'icon': '🚿',
+    'title': '보일러 온수가 나오지 않을 때',
+    'steps': [
+      '가스 밸브 열림 및 타 수도/가스 정상 작동 여부 확인',
+      '조절기 온수 온도 설정 확인 및 조정',
+      '보일러 전원 플러그를 뽑고 30초 후 재부팅 (지속될 경우 관리사무소·집주인·AS센터 문의)',
+    ],
+  },
+  {
+    'category': '보일러/가스',
+    'icon': '❄️',
+    'title': '겨울철 보일러 동파 대처법',
+    'steps': [
+      '수도에서 물이 안 나오거나 에러 코드가 뜨는지 확인',
+      '미지근한 물이나 따뜻한 수건으로 얼어 있는 배관 천천히 녹이기 (끓는 물 절대 금지)',
+      '헤어드라이어 사용 시 화재·배관 변형 방지를 위해 한곳에 오랫동안 쐬지 않기 (해결 불가 시 AS센터 문의)',
+    ],
+  },
+  {
+    'category': '보일러/가스',
+    'icon': '🚨',
+    'title': '가스 냄새가 날 때 대처법',
+    'steps': [
+      '즉시 보일러 사용을 중단하고 창문을 모두 열어 환기',
+      '폭발 위험이 있으므로 전등 스위치나 전기제품은 절대 조작 금지',
+      '가스 중간 밸브를 잠근 후 즉시 집 밖 안전한 곳으로 대피하여 가스업체 또는 119 신고',
+    ],
+  },
+  {
+    'category': '냄새/위생',
+    'icon': '🗑️',
+    'title': '음식물 쓰레기 냄새 대처법',
+    'steps': [
+      '음식물 쓰레기는 당일 또는 다음 날 바로 배출',
+      '전용 용기 정기 세척 및 완전 건조 후 사용',
+      '냄새가 심할 경우 베이킹소다를 뿌리거나 전용 탈취제 사용',
+    ],
+  },
+  {
+    'category': '냄새/위생',
+    'icon': '🧼',
+    'title': '하수구 냄새 대처법',
+    'steps': [
+      '배수구 거름망 청소 및 배수구 전용 세정제로 세척',
+      '장기간 미사용 배수구는 물을 충분히 흘려보내 트랩에 물 채우기 (지속될 경우 집주인 문의)',
+    ],
+  },
+  {
+    'category': '냄새/위생',
+    'icon': '🧺',
+    'title': '실내/빨래 꿉꿉한 냄새 대처법',
+    'steps': [
+      '하루 1~2회 이상 환기 및 습도 높을 때 제습기/제습제 활용',
+      '냄새 나는 빨래는 적정량의 세제로 재세탁 후 완전히 건조',
+      '주기적인 세탁조 청소 실시',
+    ],
+  },
+  {
+    'category': '냄새/위생',
+    'icon': '🧊',
+    'title': '냉장고 냄새 대처법',
+    'steps': [
+      '유통기한 지난 음식 즉시 폐기 및 냉장고 내부 정기 청소',
+      '음식물은 밀폐용기에 보관',
+      '냉장고 전용 탈취제나 베이킹소다 배치',
+    ],
+  },
+];
+
+final housingTerms = [
+  {'term': '임대인', 'def': '주택의 소유권을 가지고 이를 대여하는 집주인을 지칭함. 계약서상 임차인에게 주택을 원활히 사용하게 해 줄 의무가 있음.'},
+  {'term': '임차인', 'def': '임대료(보증금 및 월세)를 지불하고 주택을 사용하는 세입자(본인)를 지칭함. 계약 기간 동안 주택을 안전하게 관리하고 반환할 의무가 있음.'},
+  {'term': '다가구', 'def': '건물 전체의 소유주가 1명인 단독주택 구조임. 원룸 건물이 대표적이며, 경매 진행 시 내 보증금보다 먼저 들어온 선순위 임차보증금 총액을 확인하기 어려워 보증금 반환 위험이 높은 편임.'},
+  {'term': '다세대', 'def': '아파트나 오피스텔처럼 호실별로 소유권과 주인이 각각 분리된 공동주택 구조임. 호실별 등기부등본을 통해 권리관계를 개별적으로 확인하기 용이함.'},
+  {'term': '근저당권(융자)', 'def': '집주인이 해당 부동산을 담보로 금융기관에서 돈을 빌리면서 설정하는 담보권을 의미함. 등기부등본 \'을구\'에서 확인 가능하며, 주택 가격 대비 근저당권 설정액이 과도할 경우 보증금을 돌려받지 못할 위험이 존재함.'},
+  {'term': '가계약금', 'def': '정식 계약 체결 전 마음에 드는 매물을 선점하기 위해 임대인에게 임시로 송금하는 증거금임. 세입자의 단순 변심으로 계약을 취소할 경우 반환받기 어려우므로 송금 전 반환 조건에 대한 명확한 합의 기록(문자 등)이 필요함.'},
+  {'term': '중개수수료 (복비)', 'def': '계약을 알선한 공인중개사에게 지급하는 법정 대가임. 거래 금액과 주택 유형에 따라 법적 상한 요율이 정해져 있어 중개인의 과다 청구 여부를 사전 확인해야 함.'},
+  {'term': '특약 사항', 'def': '표준계약서 본문 외에 임대인과 임차인이 상호 합의 하에 추가하는 특별 약정 문구임. 법적 효력이 강력하므로 "전세대출 미승인 시 계약금을 전액 반환한다." 등 세입자 보호 문구를 넣는 것이 필수적임.'},
+  {'term': '전입신고', 'def': '새로운 거주지에 주소지를 두고 살기 시작했음을 관할 주민센터나 정부24에 공식 신고하는 절차임. 주민등록법상 이사 후 14일 이내 완료해야 하지만, 보증금 보호를 위한 법적 대항력을 갖추기 위해 잔금 지급 및 입주 당일에 즉시 신고하는 것을 권장.'},
+  {'term': '확정일자', 'def': '임대차계약이 체결된 날짜를 법적으로 증명하기 위해 계약서 여백에 공식 날짜 도장을 부여받는 제도임. 주민센터나 인터넷등기소에서 잔금 지급 당일 즉시 발급받는 것이 원칙임.'},
+  {'term': '대항력', 'def': '집주인이 바뀌거나 집이 경매에 넘어가더라도 계약 기간 동안 쫓겨나지 않고 거주할 수 있는 권리임. 주택 인도(이사)와 전입신고를 모두 완료한 다음 날 0시부터 효력이 발생함.'},
+  {'term': '우선변제권', 'def': '살던 집이 경매로 매각될 때 후순위 채권자보다 내 보증금을 먼저 배당(환수)받을 수 있는 법적 권리임. 대항력과 확정일자를 모두 갖춰야 성립함.'},
+  {'term': '원상복구 의무', 'def': '임대차 계약 종료 후 퇴거할 때, 고의 또는 과실로 발생한 훼손을 복구하여 집주인에게 주택을 반환해야 하는 세입자의 의무임. 일반적인 사용에 따른 자연 마모는 원상복구 대상이 아니므로, 입주 첫날 기존 하자를 사진으로 남겨두는 것이 좋음.'},
+  {'term': '공과금', 'def': '세입자 개인이 실제 소비한 전기, 수도, 도시가스 요금을 의미함.'},
+  {'term': '관리비', 'def': '건물 전체의 유지를 위해 지출되는 공동 구역 청소비, 엘리베이터 유지비, 인터넷 비용 등을 의미함.'},
+  {'term': '장기수선충당금', 'def': '건물 노후화에 따른 배관, 벽면 등 대규모 보수를 위해 적립하는 비용임. 관리비 고지서에 포함되어 세입자가 매달 대납하는 경우가 많으며, 퇴거 시 임대인에게 반환을 청구할 수 있음.'},
+  {'term': '묵시적 갱신', 'def': '계약 만료 6개월 전부터 2개월 전까지 임대인과 임차인 모두 계약 해지나 조건 변경 의사를 통보하지 않으면 이전 계약과 동일한 조건으로 계약이 자동 연장되는 제도임. 이 경우 세입자는 언제든지 계약 해지를 통보할 수 있으며, 임대인이 해지 통지를 받은 날부터 3개월이 지나면 계약이 종료되고 보증금 반환을 청구할 수 있음.'},
+];
+
+final cheongyakSteps = [
+  {
+    'step': '01',
+    'title': '청약통장 개설 (청년주택드림)',
+    'desc': '만 19세~34세, 연소득 5천만 원 이하라면 최대 연 4.5% 금리의 \'청년주택드림 청약통장\' 가입을 추천합니다.',
+    'highlight': true
+  },
+  {
+    'step': '02',
+    'title': '매월 꾸준한 금액 납입',
+    'desc': '공공분양은 월 납입 인정액(최대 25만 원)과 횟수가 중요하며, 민영주택은 지역별 예치금액 기준 충족이 필요합니다.',
+    'highlight': false
+  },
+  {
+    'step': '03',
+    'title': '청약 자격 및 가점 확인',
+    'desc': '청약홈(applyhome.co.kr)에서 무주택기간, 부양가족 수, 통장 가입기간에 따른 본인의 청약 가점을 사전 조회하세요.',
+    'highlight': false
+  },
+  {
+    'step': '04',
+    'title': '입주자 모집공고 분석',
+    'desc': '분양가, 전매제한, 실거주의무, 특별공급(신혼·신생아·다자녀 등) 자격 요건을 꼼꼼히 체크하세요.',
+    'highlight': false
+  },
+  {
+    'step': '05',
+    'title': '청약홈 온라인 신청',
+    'desc': '모바일 앱이나 Web 청약홈에서 인증서 로그인 후 신청합니다. 부부인 경우 동일 주택에 개별 중복 신청도 가능합니다.',
+    'highlight': false
+  },
+  {
+    'step': '06',
+    'title': '당첨 후 계약 및 대출',
+    'desc': '당첨 시 청년주택드림대출 등 저금리 정책 대출 상품을 적극 활용하여 계약금과 잔금을 준비하세요.',
+    'highlight': false
+  },
+];
+
+// ✨ [직접 조사하신 대표 정부 지원금 3가지 전용 데이터]
+final governmentPolicies = [
+  {
+    'tag': '금융',
+    'title': '청년미래적금',
+    'summary': '자산 형성 지원 적금상품 (3년 만기, 월 최대 50만 원)',
+    'period': '‘26.6월 출시 예정',
+    'call': '서민금융콜센터 (1397)',
+    'method': '온라인 신청 : 청년들이 가입을 원하는 은행 어플로 비대면 신청',
+    'type': '현금',
+    'legal': '[법령] 서민의 금융생활 지원에 관한 법률',
+    'details': [
+      '가입대상 : 개인소득 및 가구소득 기준을 모두 충족하는 19~34세 청년\n - (개인소득) 총급여 7,500만원(종합소득 6,300만원) 이하 또는 연매출 3억원 이하\n - (가구소득) 기준중위소득 200% 이하',
+      '정부기여금 지급 대상 :\n - (일반형) 연매출 3억원 이하 소상공인 또는 총급여 6,000만원 이하 소득자 중 가구 중위소득 200% 이하 청년\n - (우대형) 연매출 1억원 이하 소상공인 또는 총급여 3,600만원 이하 중소기업 재직자 중 가구 중위소득 150% 이하 청년\n※ 일반형 충족자 중 중소기업 신규 취업자는 우대형으로 분류\n※ 총급여 6,000~7,500만원 구간은 기여금 미지급되나 세제혜택 부여',
+      '적금이율 : 취급기관에서 자율적으로 결정',
+      '가입기간 및 납입한도 : 3년, 월 최대 50만원 (자유적립식)',
+      '기여금 지급비율 : 월 납입금액의 6%(일반형), 12%(우대형)',
+      '세제혜택 : 이자소득 비과세 특례 부여',
+    ]
+  },
+  {
+    'tag': '주거',
+    'title': '서울시 청년 월세 지원',
+    'summary': '청년층 주거비 부담 완화 (최대 12개월간 월 20만원 지원)',
+    'period': '2025.6.11.(수) 10:00 ~ 6.24.(화) 18:00',
+    'call': '서울주택도시개발공사 (1833-2030)',
+    'method': '서울주거포털(https://housing.seoul.go.kr) 청년월세지원란 온라인 신청',
+    'type': '현금',
+    'legal': '[법령] 주거기본법(제15조, 제3항)\n[자치법규] 서울특별시 청년주거 기본 조례(제7조)',
+    'details': [
+      '지원대상 : 서울 월세 거주 19세 ~ 39세 이하 청년 1인 가구 (청년인 동거인/형제자매 있는 경우 포함)\n - 소득 기준 : 기준 중위소득 150% 이하 무주택자\n - 재산 기준 : 일반재산 1억 3천만원 이하, 자동차 2,500만원 미만\n - 거주 요건 : 임차 보증금 8천만원 이하, 월세 60만원 이하 건물 거주',
+      '중복혜택 불가 : 국토부 청년월세 한시 특별지원, 서울시 청년수당, 기초생활수급자, 행복주택/전세임대/매입임대 등 공공임대주택 거주자 제외',
+      '사업 내용 : 최대 12개월 간 월 20만원 범위에서 월세 지원 (시비 100%)',
+    ]
+  },
+  {
+    'tag': '주거',
+    'title': '청년주택드림 청약통장',
+    'summary': '저소득 무주택 청년의 주택구입 및 자산형성 지원',
+    'period': '상시 신청',
+    'call': '주택도시보증공사 기금관리실 (1566-9009)',
+    'method': '주택도시기금 수탁은행(우리, 국민, 신한, 농협, 기업, 하나, 대구, 부산, 경남) 방문 신청',
+    'type': '현금, 현금(감면)',
+    'legal': '[법령] 주택법(제56조의9)\n[법령] 조세특례제한법(제87조의3)\n[행정규칙] 주택청약종합저축의 이자율 및 운영에 관한 고시(제3조)',
+    'details': [
+      '지원대상 : 19세 이상 ~ 34세 이하, 연 5천만원 이하 소득이 있는 무주택자',
+      '금리 우대 : 신규 가입일로부터 2년 이상인 경우 납입원금 5,000만원 한도 내에서 최대 10년간 우대금리 1.7%p 적용',
+      '이자소득 비과세 : 가입기간 2년 이상 시 이자소득 합계액 500만원, 원금 연 600만원 한도 비과세 적용',
+      '소득공제 : 무주택세대주에 대해 연 300만원 한도로 40%까지 소득공제 제공',
+    ]
+  },
+];
+
+final contractGuideItems = [
+  {
+    'title': '근로 시작 전 서면 작성 & 교부',
+    'desc': '근로계약서는 출근 당일까지 반드시 서면(또는 전자문서)으로 작성하고 1부를 받아 보관해야 합니다. 미작성 시 500만원 이하 벌금이 부과됩니다.',
+    'important': true
+  },
+  {
+    'title': '6대 필수 기재 항목 확인',
+    'desc': '①계약기간 ②근무장소 ③업무내용 ④근로/휴게시간 ⑤임금(기본급·상여금·지급일) ⑥휴일·연차가 명시되어 있는지 확인하세요.',
+    'important': true
+  },
+  {
+    'title': '법 미달 조건 작성 시 독소조항 무효',
+    'desc': '최저임금 미달 등 법 기준보다 불리하게 작성된 조항은 무효가 되며, 해당 부분은 근로기준법 기준이 자동으로 적용됩니다.',
+    'important': true
+  },
+  {
+    'title': '2026 최저임금 & 주휴수당 확인',
+    'desc': '2026년 최저시급은 10,320원(월급 환산 2,156,880원)입니다. 주 15시간 이상 근무 시 유급 주휴수당도 반드시 지급받아야 합니다.',
+    'important': false
+  },
+  {
+    'title': '수습기간 최저임금 감액 조건',
+    'desc': '수습기간 최저임금 10% 감액(최대 3개월)은 1년 이상 계약 시에만 가능하며, 단순노무직은 감액이 불가능합니다.',
+    'important': false
+  },
+  {
+    'title': '임금체불 및 부당처우 대처법',
+    'desc': '임금 체불 시 고용노동부(1350) 신고가 가능하며, 국가가 대신 체불 임금을 지급하는 \'간이대지급금(최대 1,000만원)\' 제도를 활용할 수 있습니다.',
+    'important': false
+  },
+];
+
+final jobCategories = [
+  {'icon': '💻', 'name': 'IT·개발', 'tip': '포트폴리오 필수. GitHub 관리 중요.', 'sites': ['사람인', '원티드', '점핏']},
+  {'icon': '📊', 'name': '경영·사무', 'tip': '엑셀, 한컴오피스 자격증 우대.', 'sites': ['잡코리아', '사람인', '공공기관채용']},
+  {'icon': '🎨', 'name': '디자인·크리에이티브', 'tip': '포트폴리오 사이트 필수. 툴 숙련도 강조.', 'sites': ['원티드', '크몽', '사람인']},
+  {'icon': '🏥', 'name': '의료·복지', 'tip': '자격증 종류와 경력 중심 지원.', 'sites': ['복지넷', '사람인', '워크넷']},
+  {'icon': '🍳', 'name': '외식·서비스', 'tip': '초단기부터 정규직까지. 시급 꼭 확인.', 'sites': ['알바몬', '알바천국', '사람인']},
+  {'icon': '🏗️', 'name': '건설·생산', 'tip': '기능사 이상 자격증 보유 시 우대.', 'sites': ['워크넷', '고용24', '사람인']},
+];
+
+final jobSites = [
+  {'name': '사람인', 'symbol': 'S', 'color': 0xFFE8192C},
+  {'name': '잡코리아', 'symbol': 'JK', 'color': 0xFF0057B8},
+  {'name': '원티드', 'symbol': 'W', 'color': 0xFF355C7D},
+  {'name': '워크넷', 'symbol': 'W', 'color': 0xFF00863C},
+  {'name': '고용24', 'symbol': '24', 'color': 0xFF1C4D9B},
+  {'name': '링크드인', 'symbol': 'in', 'color': 0xFF0A66C2},
+];
+
+final defaultContacts = [
+  {'name': '경찰', 'number': '112', 'category': '긴급'},
+  {'name': '소방·구급', 'number': '119', 'category': '긴급'},
+  {'name': '생활민원 (다산콜)', 'number': '120', 'category': '생활'},
+  {'name': '근로복지공단', 'number': '1588-0075', 'category': '취업'},
+  {'name': '주거복지재단', 'number': '1600-0777', 'category': '주거'},
+  {'name': '청년도약계좌 콜센터', 'number': '1397', 'category': '금융'},
+];
+
+final Map<String, String> botResponses = {
+  'default': '죄송해요, 조금 더 구체적으로 질문해 주시면 도움드릴게요 😊',
+  '계약': '월세 계약 시 꼭 확인할 것: ① 등기부등본 근저당 확인 ② 전입신고 + 확정일자 ③ 특약사항 기재. 계약서 사본은 반드시 보관하세요!',
+  '전입': '전입신고는 계약 후 14일 이내에 주민센터 또는 정부24에서 온라인으로도 가능합니다. 전입신고와 동시에 확정일자를 받으면 보증금이 보호됩니다.',
+  '청약': '청약통장(주택청약종합저축)은 만 19세 이상 누구나 개설 가능합니다. 매월 2~50만 원 납입하며, 납입 횟수와 금액이 청약 당첨에 영향을 줍니다.',
+  '월세': '서울시 청년 월세 지원을 통해 월 최대 20만 원, 최대 12개월 지원받을 수 있어요. 서울주거포털에서 신청하세요.',
+  '근로': '근로계약서는 반드시 서면으로 받아야 합니다. 미작성 시 사업주는 500만 원 이하 벌금. 계약서에는 임금, 근로시간, 휴일, 4대보험 내용이 모두 포함돼야 해요.',
+  '퇴직금': '퇴직금은 1년 이상 근무 + 주 15시간 이상 조건을 충족하면 받을 수 있어요. 퇴직 후 14일 이내에 지급되어야 하며, 미지급 시 고용노동부(1350)에 신고 가능합니다.',
+  '보일러': '보일러 고장은 임대인에게 즉시 연락하고 문자로 증거를 남기세요. 겨울철 동파는 임차인 관리 의무이므로 외출 시 최소 5°C 이상 유지하세요.',
+  '지원금': '대표적인 청년 지원금: 청년미래적금(26.6월 출시), 서울시 청년 월세 지원(20만원/월), 청년주택드림 청약통장.',
+};
+
+String getBotReply(String input) {
+  for (final key in botResponses.keys) {
+    if (key != 'default' && input.contains(key)) return botResponses[key]!;
+  }
+  return botResponses['default']!;
+}
+
+Color tagColor(String tag) {
+  switch (tag) {
+    case '주거': return const Color(0xFFDBEAFE);
+    case '금융': return const Color(0xFFD1FAE5);
+    case '취업': return const Color(0xFFEDE9FE);
+    case '복지': return const Color(0xFFFFEDD5);
+    case '교육': return const Color(0xFFFEF9C3);
+    default: return kMuted;
+  }
+}
+
+Color tagTextColor(String tag) {
+  switch (tag) {
+    case '주거': return const Color(0xFF1E40AF);
+    case '금융': return const Color(0xFF065F46);
+    case '취업': return const Color(0xFF5B21B6);
+    case '복지': return const Color(0xFF9A3412);
+    case '교육': return const Color(0xFF854D0E);
+    default: return kMutedFg;
+  }
+}
+
+// ─── App ───────────────────────────────────────────────────────
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: '사회초년생 가이드',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        fontFamily: 'NotoSansKR',
+        scaffoldBackgroundColor: kBackground,
+        colorScheme: ColorScheme.fromSeed(seedColor: kPrimary),
+        useMaterial3: true,
+      ),
+      home: Scaffold(
+        backgroundColor: const Color(0xFF1E1E1E),
+        body: Center(
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 20),
+            constraints: const BoxConstraints(
+              maxWidth: 390,
+              maxHeight: 844,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(36),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 25,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(36),
+              child: const MainScreen(),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  int _currentIndex = 0;
+  bool _chatOpen = false;
+
+  final List<Widget> _tabs = const [
+    HousingTab(),
+    AssetsTab(),
+    EmploymentTab(),
+    MoreTab(),
+  ];
+
+  final List<String> _titles = ['주거', '자산', '취업', '더보기'];
+
+  @override
+  Widget build(BuildContext context) {
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        backgroundColor: kBackground,
+        body: Stack(
+          children: [
+            Column(
+              children: [
+                const SizedBox(height: 44),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  decoration: const BoxDecoration(
+                    color: kCard,
+                    border: Border(bottom: BorderSide(color: kBorder, width: 1)),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        _titles[_currentIndex],
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: kForeground,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: IndexedStack(
+                    index: _currentIndex,
+                    children: _tabs,
+                  ),
+                ),
+                Container(
+                  decoration: const BoxDecoration(
+                    color: kCard,
+                    border: Border(top: BorderSide(color: kBorder, width: 1)),
+                  ),
+                  child: SafeArea(
+                    top: false,
+                    child: Row(
+                      children: List.generate(4, (i) {
+                        final icons = [Icons.home_outlined, Icons.savings_outlined, Icons.work_outline, Icons.more_horiz];
+                        final activeIcons = [Icons.home, Icons.savings, Icons.work, Icons.more_horiz];
+                        final labels = ['주거', '자산', '취업', '더보기'];
+                        final active = _currentIndex == i;
+                        return Expanded(
+                          child: GestureDetector(
+                            onTap: () => setState(() => _currentIndex = i),
+                            behavior: HitTestBehavior.opaque,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const SizedBox(height: 12),
+                                Icon(
+                                  active ? activeIcons[i] : icons[i],
+                                  size: 22,
+                                  color: active ? kPrimary : kMutedFg,
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  labels[i],
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                    color: active ? kPrimary : kMutedFg,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                if (active)
+                                  Container(width: 16, height: 2, decoration: BoxDecoration(color: kPrimary, borderRadius: BorderRadius.circular(1)))
+                                else
+                                  const SizedBox(height: 2),
+                                const SizedBox(height: 8),
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (!_chatOpen)
+              Positioned(
+                bottom: 80,
+                right: 16,
+                child: GestureDetector(
+                  onTap: () => setState(() => _chatOpen = true),
+                  child: Container(
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: kPrimary,
+                      shape: BoxShape.circle,
+                      boxShadow: [BoxShadow(color: kPrimary.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 4))],
+                    ),
+                    child: const Icon(Icons.chat_bubble_outline, color: Colors.white, size: 24),
+                  ),
+                ),
+              ),
+            if (_chatOpen)
+              ChatbotScreen(onClose: () => setState(() => _chatOpen = false)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Shared Widgets ────────────────────────────────────────────
+class AppCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsets? padding;
+  final Color? color;
+  final Border? border;
+  const AppCard({super.key, required this.child, this.padding, this.color, this.border});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: padding ?? const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color ?? kCard,
+        borderRadius: BorderRadius.circular(12),
+        border: border ?? Border.all(color: kBorder),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 4, offset: const Offset(0, 1))],
+      ),
+      child: child,
+    );
+  }
+}
+
+class SectionHeader extends StatelessWidget {
+  final String title;
+  final String? subtitle;
+  const SectionHeader({super.key, required this.title, this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: kForeground)),
+        if (subtitle != null) ...[
+          const SizedBox(height: 2),
+          Text(subtitle!, style: const TextStyle(fontSize: 13, color: kMutedFg)),
+        ],
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+}
+
+class TagBadge extends StatelessWidget {
+  final String text;
+  final Color bg;
+  final Color fg;
+  const TagBadge({super.key, required this.text, required this.bg, required this.fg});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
+      child: Text(text, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: fg)),
+    );
+  }
+}
+
+class BackButton2 extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+  const BackButton2({super.key, required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.arrow_back_ios, size: 14, color: kAccent),
+            Text(label, style: const TextStyle(fontSize: 13, color: kAccent, fontWeight: FontWeight.w500)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class GridMenuCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color iconColor;
+  final Color iconBg;
+  final VoidCallback onTap;
+  const GridMenuCard({super.key, required this.icon, required this.label, required this.iconColor, required this.iconBg, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AppCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 40, height: 40,
+              decoration: BoxDecoration(color: iconBg, borderRadius: BorderRadius.circular(10)),
+              child: Icon(icon, size: 20, color: iconColor),
+            ),
+            const SizedBox(height: 12),
+            Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: kForeground)),
+            const SizedBox(height: 8),
+            const Icon(Icons.chevron_right, size: 16, color: kMutedFg),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Accordion ─────────────────────────────────────────────────
+class AccordionItem extends StatefulWidget {
+  final String title;
+  final List<String> steps;
+  const AccordionItem({super.key, required this.title, required this.steps});
+
+  @override
+  State<AccordionItem> createState() => _AccordionItemState();
+}
+
+class _AccordionItemState extends State<AccordionItem> {
+  bool _open = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: kCard,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: kBorder),
+      ),
+      child: Column(
+        children: [
+          GestureDetector(
+            onTap: () => setState(() => _open = !_open),
+            behavior: HitTestBehavior.opaque,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              child: Row(
+                children: [
+                  Expanded(child: Text(widget.title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: kForeground))),
+                  AnimatedRotation(
+                    turns: _open ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: const Icon(Icons.keyboard_arrow_down, size: 18, color: kMutedFg),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (_open)
+            Container(
+              decoration: const BoxDecoration(border: Border(top: BorderSide(color: kBorder))),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              child: Column(
+                children: List.generate(widget.steps.length, (i) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 20, height: 20,
+                          decoration: const BoxDecoration(color: kAccent, shape: BoxShape.circle),
+                          child: Center(child: Text('${i + 1}', style: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.w600))),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(child: Text(widget.steps[i], style: const TextStyle(fontSize: 13, color: kForeground, height: 1.5))),
+                      ],
+                    ),
+                  );
+                }),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── HOUSING TAB ───────────────────────────────────────────────
+class HousingTab extends StatefulWidget {
+  const HousingTab({super.key});
+  @override
+  State<HousingTab> createState() => _HousingTabState();
+}
+
+class _HousingTabState extends State<HousingTab> {
+  String? _activeSection;
+  final Set<int> _checked = {};
+  String _selectedTroubleCategory = '층간소음';
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: _activeSection == null
+          ? _buildHome()
+          : _activeSection == 'contract'
+              ? _buildContract()
+              : _activeSection == 'checklist'
+                  ? _buildChecklist()
+                  : _activeSection == 'trouble'
+                      ? _buildTrouble()
+                      : _buildTerms(),
+    );
+  }
+
+  Widget _buildHome() {
+    final sections = [
+      {'id': 'terms', 'label': '기본 용어 설명', 'icon': Icons.menu_book_outlined, 'iconColor': 0xFF7C3AED, 'iconBg': 0xFFF5F3FF},
+      {'id': 'checklist', 'label': '방 구하기 체크리스트', 'icon': Icons.check_box_outlined, 'iconColor': 0xFF16A34A, 'iconBg': 0xFFF0FDF4},
+      {'id': 'trouble', 'label': '트러블슈팅 가이드', 'icon': Icons.warning_amber_outlined, 'iconColor': 0xFFEA580C, 'iconBg': 0xFFFFF7ED},
+      {'id': 'contract', 'label': '계약서 팁', 'icon': Icons.description_outlined, 'iconColor': 0xFF2563EB, 'iconBg': 0xFFEFF6FF},
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(color: kPrimary, borderRadius: BorderRadius.circular(16)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Text('주거 가이드', style: TextStyle(fontSize: 11, color: Colors.white60, letterSpacing: 1, fontWeight: FontWeight.w500)),
+              SizedBox(height: 4),
+              Text('혼자 살기, 처음이라도 괜찮아', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Colors.white)),
+              SizedBox(height: 2),
+              Text('계약부터 생활까지 알아야 할 모든 것', style: TextStyle(fontSize: 13, color: Colors.white70)),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        GridView.count(
+          crossAxisCount: 2,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 1.1,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          children: sections.map((s) {
+            return GridMenuCard(
+              icon: s['icon'] as IconData,
+              label: s['label'] as String,
+              iconColor: Color(s['iconColor'] as int),
+              iconBg: Color(s['iconBg'] as int),
+              onTap: () => setState(() => _activeSection = s['id'] as String),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildContract() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BackButton2(label: '주거', onTap: () => setState(() => _activeSection = null)),
+        const SectionHeader(title: '월세 계약서 팁', subtitle: '계약 전후 반드시 확인해야 할 체크포인트'),
+        ...contractTips.map((tip) {
+          Color bg, fg;
+          if (tip['tag'] == '필수') { bg = const Color(0xFFFEE2E2); fg = const Color(0xFFB91C1C); }
+          else if (tip['tag'] == '권장') { bg = const Color(0xFFDBEAFE); fg = const Color(0xFF1D4ED8); }
+          else { bg = kMuted; fg = kMutedFg; }
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: AppCard(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(tip['title']!, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: kForeground)),
+                        const SizedBox(height: 4),
+                        Text(tip['desc']!, style: const TextStyle(fontSize: 12, color: kMutedFg, height: 1.5)),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  TagBadge(text: tip['tag']!, bg: bg, fg: fg),
+                ],
+              ),
+            ),
+          );
+        }),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildChecklist() {
+    final progress = _checked.length;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BackButton2(label: '주거', onTap: () => setState(() => _activeSection = null)),
+        const SectionHeader(title: '자취방 구하기 체크리스트'),
+        AppCard(
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('$progress / ${checklistItems.length} 완료', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: kForeground)),
+                  Text('${(progress / checklistItems.length * 100).round()}%', style: const TextStyle(fontSize: 12, color: kMutedFg)),
+                ],
+              ),
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: progress / checklistItems.length,
+                  backgroundColor: kMuted,
+                  color: kAccent,
+                  minHeight: 8,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        ...List.generate(checklistItems.length, (i) {
+          final checked = _checked.contains(i);
+          return GestureDetector(
+            onTap: () => setState(() => checked ? _checked.remove(i) : _checked.add(i)),
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: kCard,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: kBorder),
+              ),
+              child: Row(
+                children: [
+                  Icon(checked ? Icons.check_box : Icons.check_box_outline_blank, size: 20, color: checked ? kAccent : kMutedFg),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      checklistItems[i],
+                      style: TextStyle(fontSize: 13, color: checked ? kMutedFg : kForeground, decoration: checked ? TextDecoration.lineThrough : null),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildTrouble() {
+    final filteredItems = troubleshootingItems
+        .where((item) => item['category'] == _selectedTroubleCategory)
+        .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BackButton2(label: '주거', onTap: () => setState(() => _activeSection = null)),
+        const SectionHeader(title: '트러블슈팅 가이드', subtitle: '자취 중 자주 발생하는 문제와 대처법'),
+        
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: troubleshootingCategories.map((category) {
+              final isSelected = _selectedTroubleCategory == category;
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0, bottom: 16.0),
+                child: GestureDetector(
+                  onTap: () => setState(() => _selectedTroubleCategory = category),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected ? kPrimary : kCard,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isSelected ? kPrimary : kBorder,
+                      ),
+                    ),
+                    child: Text(
+                      category,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                        color: isSelected ? Colors.white : kMutedFg,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+
+        ...filteredItems.map((item) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: AccordionItem(
+              title: '${item['icon']} ${item['title']}',
+              steps: List<String>.from(item['steps'] as List),
+            ),
+          );
+        }),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildTerms() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BackButton2(label: '주거', onTap: () => setState(() => _activeSection = null)),
+        const SectionHeader(title: '자취 기본 용어', subtitle: '헷갈리기 쉬운 부동산·임대차 용어 정리'),
+        ...housingTerms.map((item) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: AppCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(item['term']!, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: kAccent)),
+                  const SizedBox(height: 4),
+                  Text(item['def']!, style: const TextStyle(fontSize: 12, color: kMutedFg, height: 1.5)),
+                ],
+              ),
+            ),
+          );
+        }),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+}
+
+// ─── ASSETS TAB ────────────────────────────────────────────────
+class AssetsTab extends StatefulWidget {
+  const AssetsTab({super.key});
+  @override
+  State<AssetsTab> createState() => _AssetsTabState();
+}
+
+class _AssetsTabState extends State<AssetsTab> {
+  String? _activeSection;
+  final Set<int> _expandedPolicies = {}; // 펼침 상태 제어용 Set
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: _activeSection == null
+          ? _buildHome()
+          : _activeSection == 'cheongyak'
+              ? _buildCheongyak()
+              : _buildPolicy(),
+    );
+  }
+
+  Widget _buildHome() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(colors: [Color(0xFF1A3F6F), Color(0xFF2468B2)]),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Text('자산 가이드', style: TextStyle(fontSize: 11, color: Colors.white60, letterSpacing: 1, fontWeight: FontWeight.w500)),
+              SizedBox(height: 4),
+              Text('지금 시작하면 늦지 않아', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Colors.white)),
+              SizedBox(height: 2),
+              Text('청약부터 정부 혜택까지 똑똑하게 챙기기', style: TextStyle(fontSize: 13, color: Colors.white70)),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        GridView.count(
+          crossAxisCount: 2,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 1.1,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            GridMenuCard(
+              icon: Icons.trending_up,
+              label: '청약 가이드',
+              iconColor: const Color(0xFF2563EB),
+              iconBg: const Color(0xFFEFF6FF),
+              onTap: () => setState(() => _activeSection = 'cheongyak'),
+            ),
+            // 📍 _buildHome() 내부 GridMenuCard 부분
+GridMenuCard(
+  icon: Icons.card_giftcard_outlined,
+  label: '확인해야 할 정부 지원금', // 👈 여기를 수정하세요!
+  iconColor: const Color(0xFF16A34A),
+  iconBg: const Color(0xFFF0FDF4),
+  onTap: () => setState(() => _activeSection = 'policy'),
+),
+          ],
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildCheongyak() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      BackButton2(label: '자산', onTap: () => setState(() => _activeSection = null)),
+      const SectionHeader(
+        title: '청약 가이드', 
+        subtitle: '내 집 마련의 첫걸음, 청약통장 활용법부터 신청까지'
+      ),
+      
+      // 단계별 청약 가이드 목록
+      ...cheongyakSteps.map((step) {
+        final highlight = step['highlight'] as bool;
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: highlight ? kPrimary : kCard,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: highlight ? kPrimary : kBorder),
+              boxShadow: highlight 
+                  ? [BoxShadow(color: kPrimary.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 3))]
+                  : [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4)],
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: highlight ? Colors.white.withOpacity(0.2) : kSecondary,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    'STEP ${step['step']}', 
+                    style: TextStyle(
+                      fontSize: 11, 
+                      fontWeight: FontWeight.w700, 
+                      color: highlight ? Colors.white : kPrimary, 
+                      fontFamily: 'monospace'
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        step['title'] as String, 
+                        style: TextStyle(
+                          fontSize: 14, 
+                          fontWeight: FontWeight.w700, 
+                          color: highlight ? Colors.white : kForeground
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        step['desc'] as String, 
+                        style: TextStyle(
+                          fontSize: 12, 
+                          color: highlight ? Colors.white70 : kMutedFg, 
+                          height: 1.5
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }),
+      
+      const SizedBox(height: 6),
+
+      // 개편 포인트 팁 박스 1: 부부 중복 청약
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEFF6FF),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFBFDBFE)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Icon(Icons.info_outline, size: 18, color: Color(0xFF2563EB)),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                '부부 개별 청약 가능: 부부가 동일한 아파트 단지에 동시에 청약을 넣어도 모두 무효 처리되지 않으며, 둘 다 당첨될 경우 먼저 신청한 건이 인정됩니다.',
+                style: TextStyle(fontSize: 12, color: Color(0xFF1E3A8A), height: 1.5, fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+        ),
+      ),
+      
+      const SizedBox(height: 10),
+
+      // 개편 포인트 팁 박스 2: 청년주택드림 대출 연계
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF0FDF4),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFBBF7D0)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Icon(Icons.stars_outlined, size: 18, color: Color(0xFF16A34A)),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                '청년주택드림통장 당첨 혜택: 통장에 1년 이상 가입하고 1,000만 원 이상 납입 실적이 있으면, 당첨 시 최저 2.2%대 금리의 전용 대출(청년주택드림대출)을 지원받을 수 있습니다.',
+                style: TextStyle(fontSize: 12, color: Color(0xFF14532D), height: 1.5, fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+        ),
+      ),
+      
+      const SizedBox(height: 16),
+    ],
+  );
+}
+
+  // ✨ [수정된 대표 정부 지원금 3선 전용 화면]
+  Widget _buildPolicy() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BackButton2(label: '자산', onTap: () => setState(() => _activeSection = null)),
+        const SectionHeader(title: '확인해야 할 정부 지원금', subtitle: '주요 정부 지원금 3가지 상세 안내'),
+        ...List.generate(governmentPolicies.length, (index) {
+          final policy = governmentPolicies[index];
+          final isExpanded = _expandedPolicies.contains(index);
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: AppCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 상단 요약 정보
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TagBadge(
+                        text: policy['tag'] as String,
+                        bg: tagColor(policy['tag'] as String),
+                        fg: tagTextColor(policy['tag'] as String),
+                      ),
+
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    policy['title'] as String,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: kForeground),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    policy['summary'] as String,
+                    style: const TextStyle(fontSize: 12, color: kMutedFg),
+                  ),
+                  const SizedBox(height: 12),
+                  const Divider(height: 1, color: kBorder),
+                  const SizedBox(height: 8),
+
+                  // 펼치기 / 접기 토글 버튼
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (isExpanded) {
+                          _expandedPolicies.remove(index);
+                        } else {
+                          _expandedPolicies.add(index);
+                        }
+                      });
+                    },
+                    behavior: HitTestBehavior.opaque,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            isExpanded ? '상세내용 접기 ' : '상세내용 보기 ',
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: kAccent),
+                          ),
+                          Icon(
+                            isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                            size: 16,
+                            color: kAccent,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // 클릭 시 펼쳐지는 상세 항목
+                  if (isExpanded) ...[
+                    const SizedBox(height: 12),
+                    _infoRow('📞 전화문의', policy['call'] as String),
+                    _infoRow('📝 신청방법', policy['method'] as String),
+                    _infoRow('🎁 지원형태', policy['type'] as String),
+                    _infoRow('⚖️ 제공근거', policy['legal'] as String),
+                    const SizedBox(height: 8),
+                    const Text('📌 가입 및 선정 기준:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: kForeground)),
+                    const SizedBox(height: 6),
+                    ...(policy['details'] as List<String>).map((detail) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('• ', style: TextStyle(fontSize: 12, color: kAccent, fontWeight: FontWeight.bold)),
+                            Expanded(
+                              child: Text(
+                                detail,
+                                style: const TextStyle(fontSize: 12, color: kForeground, height: 1.4),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ],
+                ],
+              ),
+            ),
+          );
+        }),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _infoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 80,
+            child: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: kMutedFg)),
+          ),
+          Expanded(
+            child: Text(value, style: const TextStyle(fontSize: 12, color: kForeground, height: 1.3)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── EMPLOYMENT TAB ────────────────────────────────────────────
+class EmploymentTab extends StatefulWidget {
+  const EmploymentTab({super.key});
+  @override
+  State<EmploymentTab> createState() => _EmploymentTabState();
+}
+
+class _EmploymentTabState extends State<EmploymentTab> {
+  String? _activeSection;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: _activeSection == null
+          ? _buildHome()
+          : _activeSection == 'contract'
+              ? _buildContract()
+              : _buildJobs(),
+    );
+  }
+
+  Widget _buildHome() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(colors: [Color(0xFF1F3A5F), Color(0xFF3B6EA5)]),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Text('취업 가이드', style: TextStyle(fontSize: 11, color: Colors.white60, letterSpacing: 1, fontWeight: FontWeight.w500)),
+              SizedBox(height: 4),
+              Text('내 권리는 내가 지킨다', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Colors.white)),
+              SizedBox(height: 2),
+              Text('계약서부터 취업 채널까지 한 번에', style: TextStyle(fontSize: 13, color: Colors.white70)),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        GridView.count(
+          crossAxisCount: 2,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 1.1,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            GridMenuCard(
+              icon: Icons.assignment_outlined,
+              label: '근로계약서 가이드',
+              iconColor: const Color(0xFFEF4444),
+              iconBg: const Color(0xFFFEF2F2),
+              onTap: () => setState(() => _activeSection = 'contract'),
+            ),
+            GridMenuCard(
+              icon: Icons.search,
+              label: '직종별 취업 모아보기',
+              iconColor: const Color(0xFF9333EA),
+              iconBg: const Color(0xFFF5F3FF),
+              onTap: () => setState(() => _activeSection = 'jobs'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(color: kCard, borderRadius: BorderRadius.circular(12), border: Border.all(color: kBorder)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('주요 구직 사이트', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: kMutedFg, letterSpacing: 0.5)),
+              const SizedBox(height: 12),
+              GridView.count(
+                crossAxisCount: 3,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                childAspectRatio: 0.85,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                children: jobSites.map((site) {
+                  return Column(
+                    children: [
+                      Container(
+                        width: 44, height: 44,
+                        decoration: BoxDecoration(
+                          color: Color(site['color'] as int),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2))],
+                        ),
+                        child: Center(
+                          child: Text(
+                            site['symbol'] as String,
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(site['name'] as String, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: kForeground), textAlign: TextAlign.center),
+                    ],
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildContract() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BackButton2(label: '취업', onTap: () => setState(() => _activeSection = null)),
+        const SectionHeader(title: '근로계약서 가이드', subtitle: '서명 전 핵심 법률 체크포인트'),
+        ...contractGuideItems.map((item) {
+          final important = item['important'] as bool;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: kCard,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: kBorder),
+                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 4)],
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (important)
+                    Container(width: 4, margin: const EdgeInsets.only(right: 12), decoration: BoxDecoration(color: const Color(0xFFF87171), borderRadius: BorderRadius.circular(2)))
+                  else
+                    const SizedBox(width: 0),
+                  Icon(important ? Icons.error_outline : Icons.check_circle_outline, size: 16, color: important ? const Color(0xFFEF4444) : const Color(0xFF22C55E)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(item['title'] as String, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: kForeground)),
+                        const SizedBox(height: 4),
+                        Text(item['desc'] as String, style: const TextStyle(fontSize: 12, color: kMutedFg, height: 1.5)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
+        
+        // 조사 자료(최저임금, 임금체불 신고, 간이대지급금) 안내 배너
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFF7ED),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFFED7AA)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Text('💡 임금체불 시 대처법 & 간이대지급금', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF9A3412))),
+              SizedBox(height: 6),
+              Text('임금을 받지 못했다면 관할 고용노동관서 또는 1350으로 신고하세요.\n체불 확인 시 국가가 사업주 대신 최대 1,000만원(재직자 700만원)까지 지급해 주는 \'간이대지급금\' 제도를 신청할 수 있습니다.', style: TextStyle(fontSize: 12, color: Color(0xFFC2410C), height: 1.5)),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildJobs() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BackButton2(label: '취업', onTap: () => setState(() => _activeSection = null)),
+        const SectionHeader(title: '직종별 취업 정보', subtitle: '내게 맞는 직종을 찾아보세요'),
+        ...jobCategories.map((cat) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: AppCard(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(cat['icon'] as String, style: const TextStyle(fontSize: 24)),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(cat['name'] as String, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: kForeground)),
+                        const SizedBox(height: 4),
+                        Text(cat['tip'] as String, style: const TextStyle(fontSize: 12, color: kMutedFg, height: 1.4)),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 4,
+                          children: (cat['sites'] as List<String>).map((site) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(color: kSecondary, borderRadius: BorderRadius.circular(20)),
+                              child: Text(site, style: const TextStyle(fontSize: 11, color: kPrimary, fontWeight: FontWeight.w500)),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+}
+
+// ─── MORE TAB ──────────────────────────────────────────────────
+class MoreTab extends StatefulWidget {
+  const MoreTab({super.key});
+  @override
+  State<MoreTab> createState() => _MoreTabState();
+}
+
+class _MoreTabState extends State<MoreTab> {
+  bool _activeContacts = false;
+  bool _showAddForm = false;
+  final List<Map<String, String>> _contacts = List.from(defaultContacts);
+  final _nameCtrl = TextEditingController();
+  final _numberCtrl = TextEditingController();
+  String _category = '기타';
+
+  void _addContact() {
+    if (_nameCtrl.text.isEmpty || _numberCtrl.text.isEmpty) return;
+    setState(() {
+      _contacts.add({'name': _nameCtrl.text, 'number': _numberCtrl.text, 'category': _category});
+      _nameCtrl.clear();
+      _numberCtrl.clear();
+      _showAddForm = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_activeContacts) return _buildContacts();
+    return _buildHome();
+  }
+
+  Widget _buildHome() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('기능', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: kMutedFg, letterSpacing: 0.5)),
+          const SizedBox(height: 8),
+          _menuItem(Icons.phone_outlined, '비상연락처', trailing: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(color: kSecondary, borderRadius: BorderRadius.circular(20)),
+            child: Text('${_contacts.length}개', style: const TextStyle(fontSize: 11, color: kPrimary, fontWeight: FontWeight.w500)),
+          ), onTap: () => setState(() => _activeContacts = true)),
+          const SizedBox(height: 20),
+          const Text('앱 정보', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: kMutedFg, letterSpacing: 0.5)),
+          const SizedBox(height: 8),
+          _menuItem(Icons.campaign_outlined, '공지사항'),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+
+  Widget _menuItem(IconData icon, String label, {Widget? trailing, VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(color: kCard, borderRadius: BorderRadius.circular(12), border: Border.all(color: kBorder)),
+        child: Row(
+          children: [
+            Icon(icon, size: 16, color: kMutedFg),
+            const SizedBox(width: 12),
+            Expanded(child: Text(label, style: const TextStyle(fontSize: 13, color: kForeground))),
+            trailing ?? const Icon(Icons.chevron_right, size: 16, color: kMutedFg),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContacts() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BackButton2(label: '더보기', onTap: () => setState(() { _activeContacts = false; _showAddForm = false; })),
+          Row(
+            children: [
+              const Expanded(child: SectionHeader(title: '비상연락처', subtitle: '긴급 상황 시 빠르게 연락하세요')),
+              GestureDetector(
+                onTap: () => setState(() => _showAddForm = !_showAddForm),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(color: kPrimary, borderRadius: BorderRadius.circular(8)),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.add, size: 14, color: Colors.white),
+                      SizedBox(width: 4),
+                      Text('추가', style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (_showAddForm) ...[
+            AppCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('새 연락처 추가', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: kForeground)),
+                  const SizedBox(height: 12),
+                  _input(_nameCtrl, '이름 (예: 집주인)'),
+                  const SizedBox(height: 8),
+                  _input(_numberCtrl, '전화번호', type: TextInputType.phone),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    value: _category,
+                    decoration: InputDecoration(
+                      filled: true, fillColor: kMuted,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    ),
+                    style: const TextStyle(fontSize: 13, color: kForeground),
+                    items: ['긴급', '주거', '취업', '금융', '복지', '기타'].map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                    onChanged: (v) => setState(() => _category = v!),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: _addContact,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(color: kPrimary, borderRadius: BorderRadius.circular(8)),
+                            child: const Center(child: Text('저장', style: TextStyle(fontSize: 13, color: Colors.white, fontWeight: FontWeight.w500))),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setState(() => _showAddForm = false),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(color: kMuted, borderRadius: BorderRadius.circular(8)),
+                            child: const Center(child: Text('취소', style: TextStyle(fontSize: 13, color: kMutedFg, fontWeight: FontWeight.w500))),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+          ],
+          ..._contacts.asMap().entries.map((entry) {
+            final i = entry.key;
+            final c = entry.value;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(color: kCard, borderRadius: BorderRadius.circular(12), border: Border.all(color: kBorder)),
+                child: Row(
+                  children: [
+                    const Icon(Icons.phone_outlined, size: 16, color: kMutedFg),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(c['name']!, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: kForeground)),
+                          Text(c['number']!, style: const TextStyle(fontSize: 12, color: kMutedFg)),
+                        ],
+                      ),
+                    ),
+                    TagBadge(text: c['category']!, bg: tagColor(c['category']!), fg: tagTextColor(c['category']!)),
+                    if (i >= defaultContacts.length) ...[
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: () => setState(() => _contacts.removeAt(i)),
+                        child: const Icon(Icons.close, size: 16, color: kMutedFg),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            );
+          }),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+
+  Widget _input(TextEditingController ctrl, String hint, {TextInputType type = TextInputType.text}) {
+    return TextField(
+      controller: ctrl,
+      keyboardType: type,
+      style: const TextStyle(fontSize: 13, color: kForeground),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(fontSize: 13, color: kMutedFg),
+        filled: true, fillColor: kMuted,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      ),
+    );
+  }
+}
+
+// ─── CHATBOT ───────────────────────────────────────────────────
+class ChatbotScreen extends StatefulWidget {
+  final VoidCallback onClose;
+  const ChatbotScreen({super.key, required this.onClose});
+  @override
+  State<ChatbotScreen> createState() => _ChatbotScreenState();
+}
+
+class _ChatbotScreenState extends State<ChatbotScreen> {
+  final List<Map<String, String>> _messages = [
+    {'from': 'bot', 'text': '안녕하세요! 주거·자산·취업에 관해 궁금한 점을 물어보세요 😊'},
+  ];
+  final _ctrl = TextEditingController();
+  final _scrollCtrl = ScrollController();
+  final quickQuestions = ['계약서 팁', '청약 방법', '월세 지원금', '퇴직금 조건'];
+
+  void _send(String text) {
+    if (text.trim().isEmpty) return;
+    setState(() {
+      _messages.add({'from': 'user', 'text': text});
+      _messages.add({'from': 'bot', 'text': getBotReply(text)});
+    });
+    _ctrl.clear();
+    Future.delayed(const Duration(milliseconds: 100), () {
+      _scrollCtrl.animateTo(_scrollCtrl.position.maxScrollExtent, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: kBackground,
+      child: Column(
+        children: [
+          const SizedBox(height: 44),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: const BoxDecoration(color: kCard, border: Border(bottom: BorderSide(color: kBorder))),
+            child: Row(
+              children: [
+                Container(
+                  width: 36, height: 36,
+                  decoration: const BoxDecoration(color: kPrimary, shape: BoxShape.circle),
+                  child: const Icon(Icons.smart_toy_outlined, size: 18, color: Colors.white),
+                ),
+                const SizedBox(width: 10),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('AI 도우미', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: kForeground)),
+                      Text('● 온라인', style: TextStyle(fontSize: 11, color: Color(0xFF22C55E), fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: widget.onClose,
+                  child: Container(
+                    width: 32, height: 32,
+                    decoration: BoxDecoration(color: kMuted, shape: BoxShape.circle),
+                    child: const Icon(Icons.close, size: 16, color: kMutedFg),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollCtrl,
+              padding: const EdgeInsets.all(16),
+              itemCount: _messages.length,
+              itemBuilder: (context, i) {
+                final msg = _messages[i];
+                final isUser = msg['from'] == 'user';
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Row(
+                    mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (!isUser) ...[
+                        Container(
+                          width: 28, height: 28,
+                          decoration: const BoxDecoration(color: kPrimary, shape: BoxShape.circle),
+                          child: const Icon(Icons.smart_toy_outlined, size: 14, color: Colors.white),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                      Flexible(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: isUser ? kPrimary : kCard,
+                            borderRadius: BorderRadius.only(
+                              topLeft: const Radius.circular(16),
+                              topRight: const Radius.circular(16),
+                              bottomLeft: Radius.circular(isUser ? 16 : 4),
+                              bottomRight: Radius.circular(isUser ? 4 : 16),
+                            ),
+                            border: isUser ? null : Border.all(color: kBorder),
+                          ),
+                          child: Text(
+                            msg['text']!,
+                            style: TextStyle(fontSize: 13, color: isUser ? Colors.white : kForeground, height: 1.5),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+          if (_messages.length <= 3)
+            SizedBox(
+              height: 40,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                children: quickQuestions.map((q) {
+                  return GestureDetector(
+                    onTap: () => _send(q),
+                    child: Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: kSecondary,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: kBorder),
+                      ),
+                      child: Text(q, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: kPrimary)),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            decoration: const BoxDecoration(color: kCard, border: Border(top: BorderSide(color: kBorder))),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    decoration: BoxDecoration(color: kMuted, borderRadius: BorderRadius.circular(12)),
+                    child: TextField(
+                      controller: _ctrl,
+                      style: const TextStyle(fontSize: 13, color: kForeground),
+                      decoration: const InputDecoration(
+                        hintText: '질문을 입력하세요...',
+                        hintStyle: TextStyle(fontSize: 13, color: kMutedFg),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(vertical: 10),
+                      ),
+                      onSubmitted: _send,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () => _send(_ctrl.text),
+                  child: Container(
+                    width: 36, height: 36,
+                    decoration: const BoxDecoration(color: kPrimary, shape: BoxShape.circle),
+                    child: const Icon(Icons.send, size: 16, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

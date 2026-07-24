@@ -303,13 +303,43 @@ final contractGuideItems = [
   },
 ];
 
-final jobCategories = [
-  {'icon': '💻', 'name': 'IT·개발', 'tip': '포트폴리오 필수. GitHub 관리 중요.', 'sites': ['사람인', '원티드', '점핏']},
-  {'icon': '📊', 'name': '경영·사무', 'tip': '엑셀, 한컴오피스 자격증 우대.', 'sites': ['잡코리아', '사람인', '공공기관채용']},
-  {'icon': '🎨', 'name': '디자인·크리에이티브', 'tip': '포트폴리오 사이트 필수. 툴 숙련도 강조.', 'sites': ['원티드', '크몽', '사람인']},
-  {'icon': '🏥', 'name': '의료·복지', 'tip': '자격증 종류와 경력 중심 지원.', 'sites': ['복지넷', '사람인', '워크넷']},
-  {'icon': '🍳', 'name': '외식·서비스', 'tip': '초단기부터 정규직까지. 시급 꼭 확인.', 'sites': ['알바몬', '알바천국', '사람인']},
-  {'icon': '🏗️', 'name': '건설·생산', 'tip': '기능사 이상 자격증 보유 시 우대.', 'sites': ['워크넷', '고용24', '사람인']},
+final List<Map<String, dynamic>> jobCategories = [
+  {
+    'name': 'IT·개발',
+    'icon': '💻',
+    'tip': '프로젝트 경험과 GitHub·포트폴리오 관리가 중요합니다.',
+    'sites': ['사람인', '원티드', '점핏'],
+  },
+  {
+    'name': '경영·사무',
+    'icon': '🏢',
+    'tip': 'OA 및 엑셀 등 사무 컴퓨터 활용 능력이 중요합니다.',
+    'sites': ['잡코리아', '사람인', '고용24'],
+  },
+  {
+    'name': '디자인·크리에이티브',
+    'icon': '🎨',
+    'tip': '포트폴리오와 디자인 툴 활용 능력이 중요합니다.',
+    'sites': ['원티드', '사람인', '잡코리아'],
+  },
+  {
+    'name': '의료·복지',
+    'icon': '🏥',
+    'tip': '면허·자격증과 관련 경력이 중요한 직군입니다.',
+    'sites': ['복지넷', '사람인', '워크넷'],
+  },
+  {
+    'name': '외식·서비스',
+    'icon': '🍽️',
+    'tip': '아르바이트부터 정규직까지 다양한 채용이 이루어집니다.',
+    'sites': ['알바몬', '알바천국', '사람인'],
+  },
+  {
+    'name': '건설·생산',
+    'icon': '🏗️',
+    'tip': '직무 관련 자격증과 현장 경험이 우대됩니다.',
+    'sites': ['워크넷', '고용24', '사람인'],
+  },
 ];
 
 final jobSites = [
@@ -1397,54 +1427,12 @@ class _EmploymentTabState extends State<EmploymentTab> {
             ),
             GridMenuCard(
               icon: Icons.search,
-              label: '직종별 취업 모아보기',
+              label: '주요 구직 사이트',
               iconColor: const Color(0xFF9333EA),
               iconBg: const Color(0xFFF5F3FF),
               onTap: () => setState(() => _activeSection = 'jobs'),
             ),
           ],
-        ),
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: kCard, borderRadius: BorderRadius.circular(12), border: Border.all(color: kBorder)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('주요 구직 사이트', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: kMutedFg, letterSpacing: 0.5)),
-              const SizedBox(height: 12),
-              GridView.count(
-                crossAxisCount: 3,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                childAspectRatio: 0.85,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                children: jobSites.map((site) {
-                  return Column(
-                    children: [
-                      Container(
-                        width: 44, height: 44,
-                        decoration: BoxDecoration(
-                          color: Color(site['color'] as int),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2))],
-                        ),
-                        child: Center(
-                          child: Text(
-                            site['symbol'] as String,
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(site['name'] as String, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: kForeground), textAlign: TextAlign.center),
-                    ],
-                  );
-                }).toList(),
-              ),
-            ],
-          ),
         ),
         const SizedBox(height: 16),
       ],
@@ -1494,7 +1482,6 @@ class _EmploymentTabState extends State<EmploymentTab> {
           );
         }),
         
-        // 조사 자료(최저임금, 임금체불 신고, 간이대지급금) 안내 배너
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -1521,7 +1508,53 @@ class _EmploymentTabState extends State<EmploymentTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BackButton2(label: '취업', onTap: () => setState(() => _activeSection = null)),
-        const SectionHeader(title: '직종별 취업 정보', subtitle: '내게 맞는 직종을 찾아보세요'),
+        const SectionHeader(title: '주요 구직 사이트', subtitle: '대표 구직 채널 및 직종별 정보'),
+        
+        // 기존 홈 화면에 있던 구직 사이트 6개 카드 디자인 그대로 옮김
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(color: kCard, borderRadius: BorderRadius.circular(12), border: Border.all(color: kBorder)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('주요 구직 사이트', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: kMutedFg, letterSpacing: 0.5)),
+              const SizedBox(height: 12),
+              GridView.count(
+                crossAxisCount: 3,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                childAspectRatio: 0.85,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                children: jobSites.map((site) {
+                  return Column(
+                    children: [
+                      Container(
+                        width: 44, height: 44,
+                        decoration: BoxDecoration(
+                          color: Color(site['color'] as int),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2))],
+                        ),
+                        child: Center(
+                          child: Text(
+                            site['symbol'] as String,
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(site['name'] as String, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: kForeground), textAlign: TextAlign.center),
+                    ],
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // 기존 직종별 정보 리스트 그대로 유지
         ...jobCategories.map((cat) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 10),

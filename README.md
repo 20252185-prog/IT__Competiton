@@ -46,6 +46,25 @@
 * **Backend:** Firebase Cloud Firestore *(예정)*
 * **Tools:** GitHub, Figma, VS Code
 
+* ---
+
+## 🔑 AI 챗봇(Gemini API) 실행 가이드
+
+본 프로젝트는 **보안 가이드라인(API Key 하드코딩 방지)**을 준수하여 개발되었습니다. 
+AI 챗봇 기능을 정상적으로 테스트하시려면 아래 가이드에 따라 API 키를 설정 후 실행해 주세요.
+
+### 1. Gemini API Key 발급
+1. [Google AI Studio](https://aistudio.google.com/)에 접속합니다.
+2. Google 계정 로그인 후 **Get API key** 메뉴에서 무료 키를 발급받습니다.
+
+### 2. 프로젝트 실행 방법 (택 1)
+
+#### **방법 A. 터미널 명령어로 키 전달하여 실행 (추천 ⭐️)**
+소스코드를 변경하지 않고 실행 시점에 안전하게 키를 주입하는 표준 방식입니다.
+
+```bash
+flutter run --dart-define=GEMINI_API_KEY=발급받으신_GEMINI_KEY
+
 ---
 
 ## 📌 Project Status

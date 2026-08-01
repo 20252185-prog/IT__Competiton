@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'constants/colors.dart';
 import 'screens/main_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const MyApp());
 }
 
@@ -20,31 +28,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: kPrimary),
         useMaterial3: true,
       ),
-      home: Scaffold(
-        backgroundColor: const Color(0xFF1E1E1E),
-        body: Center(
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 20),
-            constraints: const BoxConstraints(
-              maxWidth: 390,
-              maxHeight: 844,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(36),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  blurRadius: 25,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(36),
-              child: const MainScreen(),
-            ),
-          ),
-        ),
+      // Scaffold로 감싸서 Material 위젯 에러 방지 및 전체 화면 출력
+      home: const Scaffold(
+        body: MainScreen(),
       ),
     );
   }

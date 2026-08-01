@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import '../constants/colors.dart';
 
 class ChatbotScreen extends StatefulWidget {
@@ -11,10 +11,6 @@ class ChatbotScreen extends StatefulWidget {
 }
 
 class _ChatbotScreenState extends State<ChatbotScreen> {
-  // 🔑 구글 AI Studio 개인 계정 키
-  // 키를 비워서 저장 (Ctrl + S)
-  static const String _apiKey = String.fromEnvironment('GEMINI_API_KEY');
-
   GenerativeModel? _model;
   ChatSession? _chatSession;
   bool _isLoading = false;
@@ -22,7 +18,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   final List<Map<String, String>> _messages = [
     {
       'from': 'bot',
-      'text': '안녕하세요! 👋 Gemini AI입니다.\n주거, 자산, 취업 등 궁금한 것은 무엇이든 편하게 질문해보세요!'
+      'text': '안녕하세요! 👋 Firebase Gemini AI입니다.\n사회초년생 가이드 앱에 대해 궁금한 점이나 주거, 청년 정책 등 무엇이든 편하게 질문해보세요!'
     },
   ];
 
@@ -32,25 +28,19 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   @override
   void initState() {
     super.initState();
-    _initGemini();
+    _initAi();
   }
 
-  void _initGemini() {
-    // 💡 키가 완전히 비어있을 때만 차단하도록 수정되었습니다!
-    if (_apiKey.isEmpty) {
-      print('⚠️ [Gemini Error] API 키가 비어 있습니다.');
-      return;
-    }
-
+  // 💡 API 키 없이 Firebase 인증으로 바로 AI 연결!
+  void _initAi() {
     try {
-      _model = GenerativeModel(
-        model: 'gemini-3-flash-preview', // 최신 권장 모델 (안 될 경우 'gemini-1.5-flash'로 변경)
-        apiKey: _apiKey,
+      _model = FirebaseAI.googleAI().generativeModel(
+        model: 'gemini-1.5-flash',
       );
       _chatSession = _model!.startChat();
-      print('✅ Gemini AI가 성공적으로 초기화되었습니다!');
+      print('✅ Firebase Gemini AI가 성공적으로 초기화되었습니다!');
     } catch (e) {
-      print('❌ Gemini 초기화 에러: $e');
+      print('❌ AI 초기화 실패: $e');
     }
   }
 
@@ -69,18 +59,23 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       if (_chatSession != null) {
         final response = await _chatSession!.sendMessage(Content.text(text));
         setState(() {
-          _messages.add({'from': 'bot', 'text': response.text ?? '답변을 생성하지 못했습니다.'});
+          _messages.add({
+            'from': 'bot',
+            'text': response.text ?? '답변을 생성하지 못했습니다.'
+          });
         });
       } else {
         setState(() {
-          _messages.add({'from': 'bot', 'text': 'API 키를 다시 확인해 주세요 (초기화 실패).'});
+          _messages.add({
+            'from': 'bot',
+            'text': 'AI 연결 준비 중입니다. 잠시 후 다시 시도해 주세요.'
+          });
         });
       }
     } catch (e) {
-      // 💡 터미널에 진짜 원인이 찍히도록 print 추가
-      print('❌ 메세지 전송 실패 원인: $e');
+      print('❌ 메세지 전송 실패: $e');
       setState(() {
-        _messages.add({'from': 'bot', 'text': '네트워크 오류가 발생했거나 API 키가 올바르지 않습니다.\n($e)'});
+        _messages.add({'from': 'bot', 'text': '오류가 발생했습니다: $e'});
       });
     } finally {
       setState(() {
@@ -110,7 +105,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         children: [
           const SizedBox(height: 44),
           
-          // --- 헤더 (상단) ---
+          // --- 헤더 ---
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: const BoxDecoration(
@@ -148,7 +143,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             ),
           ),
 
-          // --- 대화 내역 목록 ---
+          // --- 메시지 목록 ---
           Expanded(
             child: ListView.builder(
               controller: _scrollCtrl,
@@ -198,7 +193,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             ),
           ),
 
-          // --- 하단 입력창 ---
+          // --- 입력창 ---
           Container(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             decoration: const BoxDecoration(

@@ -7,9 +7,17 @@ import 'screens/main_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // Firebase 설정이 아직 없거나 지원되지 않는 플랫폼(웹 등)에서도
+  // 앱 화면은 정상적으로 뜨도록 초기화 실패를 흡수한다.
+  // 챗봇 기능만 비활성화되고 나머지 탭은 그대로 동작한다.
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e, s) {
+    debugPrint('⚠️ Firebase 초기화 실패 (챗봇 기능 비활성화): $e');
+    debugPrintStack(stackTrace: s);
+  }
 
   runApp(const MyApp());
 }

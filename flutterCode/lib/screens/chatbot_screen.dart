@@ -35,7 +35,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   void _initAi() {
     try {
       _model = FirebaseAI.googleAI().generativeModel(
-        model: 'gemini-1.5-flash',
+        model: 'gemini-3.6-flash',
       );
       _chatSession = _model!.startChat();
       print('✅ Firebase Gemini AI가 성공적으로 초기화되었습니다!');

@@ -364,6 +364,8 @@ String getBotReply(String input) {
 
 Color tagColor(String tag) {
   switch (tag) {
+    case '긴급': return const Color(0xFFFEE2E2);
+    case '생활': return const Color(0xFFFEF9C3);
     case '주거': return const Color(0xFFDBEAFE);
     case '금융': return const Color(0xFFD1FAE5);
     case '취업': return const Color(0xFFEDE9FE);
@@ -375,6 +377,8 @@ Color tagColor(String tag) {
 
 Color tagTextColor(String tag) {
   switch (tag) {
+    case '긴급': return const Color(0xFFB91C1C);
+    case '생활': return const Color(0xFF854D0E);
     case '주거': return const Color(0xFF1E40AF);
     case '금융': return const Color(0xFF065F46);
     case '취업': return const Color(0xFF5B21B6);

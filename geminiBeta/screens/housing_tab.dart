@@ -1,72 +1,67 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/colors.dart';
 import '../models/app_data.dart';
 import '../widgets/accordion_item.dart';
 import '../widgets/app_card.dart';
+import '../widgets/back_button.dart';
 import '../widgets/grid_menu_card.dart';
 import '../widgets/section_header.dart';
 import '../widgets/tag_badge.dart';
 
 class HousingTab extends StatefulWidget {
   const HousingTab({super.key});
-
   @override
   State<HousingTab> createState() => _HousingTabState();
 }
 
 class _HousingTabState extends State<HousingTab> {
+  static const _checklistStorageKey = 'housing_checklist_checked';
   String? _activeSection;
   final Set<int> _checked = {};
   String _selectedTroubleCategory = '층간소음';
 
-  // 🔙 이전으로 돌아가기 버튼 공통 위젯
-  Widget _buildBackButton(String label) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: () => setState(() => _activeSection = null),
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.arrow_back_ios_new, size: 16, color: kPrimary),
-              const SizedBox(width: 4),
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: kPrimary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  @override
+  void initState() {
+    super.initState();
+    _loadChecklist();
+  }
+
+  // 기기에 저장해 둔 체크 상태를 불러옴.
+  // 이 값은 이 기기의 로컬 저장소에만 있으므로 다른 사람 앱과는 공유되지 않음.
+  Future<void> _loadChecklist() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_checklistStorageKey);
+    if (raw == null || raw.isEmpty) return;
+    final List<dynamic> decoded = jsonDecode(raw);
+    if (!mounted) return;
+    setState(() {
+      _checked.addAll(decoded.map((e) => e as int));
+    });
+  }
+
+  Future<void> _saveChecklist() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_checklistStorageKey, jsonEncode(_checked.toList()));
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: _activeSection == null
-            ? _buildHome()
-            : _activeSection == 'contract'
-                ? _buildContract()
-                : _activeSection == 'checklist'
-                    ? _buildChecklist()
-                    : _activeSection == 'trouble'
-                        ? _buildTrouble()
-                        : _buildTerms(),
-      ),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: _activeSection == null
+          ? _buildHome()
+          : _activeSection == 'contract'
+              ? _buildContract()
+              : _activeSection == 'checklist'
+                  ? _buildChecklist()
+                  : _activeSection == 'trouble'
+                      ? _buildTrouble()
+                      : _buildTerms(),
     );
   }
 
-  // 1. 메인 주거 홈 화면
   Widget _buildHome() {
     final sections = [
       {'id': 'terms', 'label': '기본 용어 설명', 'icon': Icons.menu_book_outlined, 'iconColor': 0xFF7C3AED, 'iconBg': 0xFFF5F3FF},
@@ -74,17 +69,13 @@ class _HousingTabState extends State<HousingTab> {
       {'id': 'trouble', 'label': '트러블슈팅 가이드', 'icon': Icons.warning_amber_outlined, 'iconColor': 0xFFEA580C, 'iconBg': 0xFFFFF7ED},
       {'id': 'contract', 'label': '계약서 팁', 'icon': Icons.description_outlined, 'iconColor': 0xFF2563EB, 'iconBg': 0xFFEFF6FF},
     ];
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: kPrimary,
-            borderRadius: BorderRadius.circular(16),
-          ),
+          decoration: BoxDecoration(color: kPrimary, borderRadius: BorderRadius.circular(16)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: const [
@@ -119,25 +110,17 @@ class _HousingTabState extends State<HousingTab> {
     );
   }
 
-  // 2. 월세 계약서 팁
   Widget _buildContract() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildBackButton('주거 홈으로'),
+        BackButton2(label: '주거', onTap: () => setState(() => _activeSection = null)),
         const SectionHeader(title: '월세 계약서 팁', subtitle: '계약 전후 반드시 확인해야 할 체크포인트'),
         ...contractTips.map((tip) {
           Color bg, fg;
-          if (tip['tag'] == '필수') {
-            bg = const Color(0xFFFEE2E2);
-            fg = const Color(0xFFB91C1C);
-          } else if (tip['tag'] == '권장') {
-            bg = const Color(0xFFDBEAFE);
-            fg = const Color(0xFF1D4ED8);
-          } else {
-            bg = kMuted;
-            fg = kMutedFg;
-          }
+          if (tip['tag'] == '필수') { bg = const Color(0xFFFEE2E2); fg = const Color(0xFFB91C1C); }
+          else if (tip['tag'] == '권장') { bg = const Color(0xFFDBEAFE); fg = const Color(0xFF1D4ED8); }
+          else { bg = kMuted; fg = kMutedFg; }
           return Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: AppCard(
@@ -166,13 +149,12 @@ class _HousingTabState extends State<HousingTab> {
     );
   }
 
-  // 3. 자취방 구하기 체크리스트
   Widget _buildChecklist() {
     final progress = _checked.length;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildBackButton('주거 홈으로'),
+        BackButton2(label: '주거', onTap: () => setState(() => _activeSection = null)),
         const SectionHeader(title: '자취방 구하기 체크리스트'),
         AppCard(
           child: Column(
@@ -181,14 +163,14 @@ class _HousingTabState extends State<HousingTab> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('$progress / ${checklistItems.length} 완료', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: kForeground)),
-                  Text('${(checklistItems.isEmpty ? 0 : (progress / checklistItems.length * 100)).round()}%', style: const TextStyle(fontSize: 12, color: kMutedFg)),
+                  Text('${(progress / checklistItems.length * 100).round()}%', style: const TextStyle(fontSize: 12, color: kMutedFg)),
                 ],
               ),
               const SizedBox(height: 8),
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
                 child: LinearProgressIndicator(
-                  value: checklistItems.isEmpty ? 0 : progress / checklistItems.length,
+                  value: progress / checklistItems.length,
                   backgroundColor: kMuted,
                   color: kAccent,
                   minHeight: 8,
@@ -198,43 +180,50 @@ class _HousingTabState extends State<HousingTab> {
           ),
         ),
         const SizedBox(height: 10),
-        ...List.generate(checklistItems.length, (i) {
-          final checked = _checked.contains(i);
-          return GestureDetector(
-            onTap: () => setState(() => checked ? _checked.remove(i) : _checked.add(i)),
-            child: Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: kCard,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: kBorder),
-              ),
-              child: Row(
-                children: [
-                  Icon(checked ? Icons.check_box : Icons.check_box_outline_blank, size: 20, color: checked ? kAccent : kMutedFg),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      checklistItems[i],
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: checked ? kMutedFg : kForeground,
-                        decoration: checked ? TextDecoration.lineThrough : null,
+        ...(() {
+          final order = List.generate(checklistItems.length, (i) => i)
+            ..sort((a, b) {
+              final aChecked = _checked.contains(a) ? 1 : 0;
+              final bChecked = _checked.contains(b) ? 1 : 0;
+              if (aChecked != bChecked) return aChecked - bChecked;
+              return a.compareTo(b);
+            });
+          return order.map((i) {
+            final checked = _checked.contains(i);
+            return GestureDetector(
+              onTap: () {
+                setState(() => checked ? _checked.remove(i) : _checked.add(i));
+                _saveChecklist();
+              },
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: kCard,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: kBorder),
+                ),
+                child: Row(
+                  children: [
+                    Icon(checked ? Icons.check_box : Icons.check_box_outline_blank, size: 20, color: checked ? kAccent : kMutedFg),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        checklistItems[i],
+                        style: TextStyle(fontSize: 13, color: checked ? kMutedFg : kForeground, decoration: checked ? TextDecoration.lineThrough : null),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
-        }),
+            );
+          });
+        })(),
         const SizedBox(height: 16),
       ],
     );
   }
 
-  // 4. 트러블슈팅 가이드
   Widget _buildTrouble() {
     final filteredItems = troubleshootingItems
         .where((item) => item['category'] == _selectedTroubleCategory)
@@ -243,8 +232,9 @@ class _HousingTabState extends State<HousingTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildBackButton('주거 홈으로'),
+        BackButton2(label: '주거', onTap: () => setState(() => _activeSection = null)),
         const SectionHeader(title: '트러블슈팅 가이드', subtitle: '자취 중 자주 발생하는 문제와 대처법'),
+        
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
@@ -260,7 +250,9 @@ class _HousingTabState extends State<HousingTab> {
                     decoration: BoxDecoration(
                       color: isSelected ? kPrimary : kCard,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: isSelected ? kPrimary : kBorder),
+                      border: Border.all(
+                        color: isSelected ? kPrimary : kBorder,
+                      ),
                     ),
                     child: Text(
                       category,
@@ -276,6 +268,7 @@ class _HousingTabState extends State<HousingTab> {
             }).toList(),
           ),
         ),
+
         ...filteredItems.map((item) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 10),
@@ -290,12 +283,11 @@ class _HousingTabState extends State<HousingTab> {
     );
   }
 
-  // 5. 자취 기본 용어
   Widget _buildTerms() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildBackButton('주거 홈으로'),
+        BackButton2(label: '주거', onTap: () => setState(() => _activeSection = null)),
         const SectionHeader(title: '자취 기본 용어', subtitle: '헷갈리기 쉬운 부동산·임대차 용어 정리'),
         ...housingTerms.map((item) {
           return Padding(

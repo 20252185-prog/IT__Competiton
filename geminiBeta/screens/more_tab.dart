@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/colors.dart';
 import '../models/app_data.dart';
 import '../widgets/app_card.dart';
@@ -15,10 +17,40 @@ class MoreTab extends StatefulWidget {
 class _MoreTabState extends State<MoreTab> {
   bool _activeContacts = false;
   bool _showAddForm = false;
+  static const _storageKey = 'emergency_contacts_added';
   final List<Map<String, String>> _contacts = List.from(defaultContacts);
   final _nameCtrl = TextEditingController();
   final _numberCtrl = TextEditingController();
   String _category = '기타';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadContacts();
+  }
+
+  // 기기에 저장해 둔 연락처를 불러와 기본 연락처 뒤에 이어붙임.
+  // 이 값은 이 기기의 로컬 저장소에만 있으므로 다른 사람 앱과는 공유되지 않음.
+  Future<void> _loadContacts() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_storageKey);
+    if (raw == null || raw.isEmpty) return;
+    final List<dynamic> decoded = jsonDecode(raw);
+    final added = decoded
+        .map((e) => Map<String, String>.from(e as Map))
+        .toList();
+    if (!mounted) return;
+    setState(() {
+      _contacts.addAll(added);
+    });
+  }
+
+  // 사용자가 직접 추가한 연락처(기본 연락처 이후 부분)만 저장.
+  Future<void> _saveContacts() async {
+    final prefs = await SharedPreferences.getInstance();
+    final added = _contacts.sublist(defaultContacts.length);
+    await prefs.setString(_storageKey, jsonEncode(added));
+  }
 
   void _addContact() {
     if (_nameCtrl.text.isEmpty || _numberCtrl.text.isEmpty) return;
@@ -28,6 +60,7 @@ class _MoreTabState extends State<MoreTab> {
       _numberCtrl.clear();
       _showAddForm = false;
     });
+    _saveContacts();
   }
 
   @override
@@ -181,7 +214,10 @@ class _MoreTabState extends State<MoreTab> {
                     if (i >= defaultContacts.length) ...[
                       const SizedBox(width: 8),
                       GestureDetector(
-                        onTap: () => setState(() => _contacts.removeAt(i)),
+                        onTap: () {
+                          setState(() => _contacts.removeAt(i));
+                          _saveContacts();
+                        },
                         child: const Icon(Icons.close, size: 16, color: kMutedFg),
                       ),
                     ],

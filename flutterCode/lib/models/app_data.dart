@@ -303,7 +303,7 @@ final List<Map<String, dynamic>> jobCategories = [
     'name': '디자인·크리에이티브',
     'icon': '🎨',
     'tip': '포트폴리오와 디자인 툴 활용 능력이 중요합니다.',
-    'sites': ['원티드', '사람인', '잡코리아'],
+    'sites': ['노트폴리오', '사람인', '원티드'],
   },
   {
     'name': '의료·복지',

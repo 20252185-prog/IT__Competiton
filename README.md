@@ -10,49 +10,59 @@
 
 * 기본 용어 설명
 * 방 구하기 체크리스트
-* 계약서 팁
 * 트러블슈팅 가이드
+* 계약서 팁
 
 ### 💰 자산
 
 * 청약 가이드
-* 정부지원금
+* 확인해야 할 정부 지원금
 
 ### 💼 취업
 
 * 근로계약서 가이드
-* 주요 구직사이트
+* 주요 구직 사이트
 
 ### 🤖 AI 챗봇
 
-* 청년 정책 및 계약 관련 질의응답
+* Google Gemini 기반 AI 챗봇
+* 주거·자산·취업 관련 맞춤형 질의응답
+* 청년 정책 및 자립 정보 안내
+
+### 📱 더보기
+
+* 비상 연락처 제공
+* 사용자 연락처 추가 및 관리
 
 ---
 
 ## 👥 Members & Roles
 
-| Member             | Role                                                                    |
-| ------------------ | ----------------------------------------------------------------------- |
-| **20252192-maker** | Flutter 프론트엔드 개발 (주거·자산·취업 탭 UI 구현), 자료 조사(트러블슈팅가이드, 정부지원금 등), Figma 디자인, 서비스 기획   |
-| **20252185-prog**  | GitHub Repository 관리,  Flutter 프론트엔드 개발, Figma 디자인, 자료 조사(주거-자취 관련 계약서 작성, 체크리스트 등)       |
-| **yj2157**         | 서비스 기획 및 아이디어 구상, 자료 조사(취업 탭·근로계약 등), Figma 디자인                                                |
-| **SW313131**       | 서비스 기획, 계획서 작성, 자료 조사(자산 탭, 청약 가이드 등), Figma 디자인                                                |
-
+| Member | Main Role | Responsibilities |
+| --- | --- | --- |
+| 👑 **황세원**<br>`SW313131` | `Leader` `Planner` | • 팀 리딩 및 프로젝트 총괄<br>• 서비스 기획 및 발표/문서 작성<br>• Figma UI/UX 디자인 및 자료 조사 |
+| **윤서연**<br>`20252192-maker` | `Frontend` `Design` | • Flutter 프론트엔드 메인 UI/UX 개발<br>• Figma UI/UX 디자인<br>• Gemini API 연동 보조<br>• 서비스 기획 및 자료 조사 |
+| **안예원**<br>`20252185-prog` | `Backend` `Design` | • Firebase 및 Gemini API 연동 구축<br>• GitHub 레포지토리 관리 및 Flutter 서브 개발<br>• Figma 디자인 및 자료 조사 |
+| **김유진**<br>`yj2157` | `Planner` `Design` | • 서비스 아이디어 기획 및 Figma 디자인<br>• Flutter 더보기 탭 UI 개발<br>• 자료 조사 |
 ---
 
 ## 🛠 Tech Stack
 
-* **Frontend:** Flutter (Dart)
-* **Backend:** Firebase Cloud Firestore *(예정)*
-* **Tools:** GitHub, Figma, VS Code
+- **Frontend:** Flutter (Dart)
+- **Backend & Platform:** Firebase
+- **AI Model / API:** Google Gemini Developer API
+- **Design & Tools:** Figma, GitHub, VS Code
+- **Test Device:** Samsung Galaxy Tab (Android)
 
 ---
 
 ## 📌 Project Status
 
-🚧 **Development in Progress**
+✅ **Completed**
 
-현재 Flutter를 활용한 프론트엔드(UI)를 구현 중이며, 추후 Firebase 연동 및 AI 챗봇 기능을 추가하여 프로젝트를 완성할 예정입니다.
+* Flutter 기반의 모바일 앱 UI 및 주요 가이드 기능을 모두 구현하였습니다.
+* **Firebase AI Logic**을 연동하여 **Google Gemini Developer API** 기반의 맞춤형 AI 챗봇 기능을 완성하였습니다.
+* Samsung Galaxy Tab 실기기 환경에서 개발 및 최종 테스트를 진행하였습니다.
 
 <img width="373" height="498" alt="image" src="https://github.com/user-attachments/assets/ac88aab3-320a-4321-b8e9-77b9271ead6c" />
 <img width="400" height="500" alt="image" src="https://github.com/user-attachments/assets/bbd79802-b95d-43d3-b89b-4959d422d29f" />

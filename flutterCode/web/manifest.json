@@ -1,6 +1,6 @@
 {
-    "name": "it_app",
-    "short_name": "it_app",
+    "name": "걸어서 사회 속으로",
+    "short_name": "걸어서 사회 속으로",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

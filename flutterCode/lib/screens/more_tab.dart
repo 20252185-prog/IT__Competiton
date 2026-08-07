@@ -155,7 +155,7 @@ class _MoreTabState extends State<MoreTab> {
                   _input(_numberCtrl, '전화번호', type: TextInputType.phone),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
-                    value: _category,
+                    initialValue: _category,
                     decoration: InputDecoration(
                       filled: true, fillColor: kMuted,
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),

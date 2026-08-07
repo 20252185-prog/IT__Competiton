@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '사회초년생 가이드',
+      title: '걸어서 사회 속으로',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'NotoSansKR',

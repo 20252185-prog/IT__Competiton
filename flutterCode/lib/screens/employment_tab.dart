@@ -95,7 +95,7 @@ class _EmploymentTabState extends State<EmploymentTab> {
                 color: kCard,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: kBorder),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 4)],
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 4)],
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,7 +173,7 @@ class _EmploymentTabState extends State<EmploymentTab> {
                         decoration: BoxDecoration(
                           color: Color(site['color'] as int),
                           borderRadius: BorderRadius.circular(12),
-                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2))],
+                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 4, offset: const Offset(0, 2))],
                         ),
                         child: Center(
                           child: Text(

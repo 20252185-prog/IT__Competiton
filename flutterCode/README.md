@@ -1,6 +1,6 @@
-# it_app
+# 걸어서 사회 속으로
 
-A new Flutter project.
+사회초년생을 위한 주거·자산·취업 가이드 앱 (Flutter + Firebase + Gemini)
 
 ## Getting Started
 

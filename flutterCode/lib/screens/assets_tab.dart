@@ -101,8 +101,8 @@ class _AssetsTabState extends State<AssetsTab> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: highlight ? kPrimary : kBorder),
                 boxShadow: highlight 
-                    ? [BoxShadow(color: kPrimary.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 3))]
-                    : [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4)],
+                    ? [BoxShadow(color: kPrimary.withValues(alpha: 0.2), blurRadius: 8, offset: const Offset(0, 3))]
+                    : [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 4)],
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,7 +110,7 @@ class _AssetsTabState extends State<AssetsTab> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: highlight ? Colors.white.withOpacity(0.2) : kSecondary,
+                      color: highlight ? Colors.white.withValues(alpha: 0.2) : kSecondary,
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
@@ -295,7 +295,7 @@ class _AssetsTabState extends State<AssetsTab> {
                           ],
                         ),
                       );
-                    }).toList(),
+                    }),
                   ],
                 ],
               ),

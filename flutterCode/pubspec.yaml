@@ -1,5 +1,5 @@
 name: it_app
-description: "A new Flutter project."
+description: "사회초년생을 위한 주거·자산·취업 가이드 앱"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

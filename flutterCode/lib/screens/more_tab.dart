@@ -29,6 +29,13 @@ class _MoreTabState extends State<MoreTab> {
     _loadContacts();
   }
 
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _numberCtrl.dispose();
+    super.dispose();
+  }
+
   // 기기에 저장해 둔 연락처를 불러와 기본 연락처 뒤에 이어붙임.
   // 이 값은 이 기기의 로컬 저장소에만 있으므로 다른 사람 앱과는 공유되지 않음.
   Future<void> _loadContacts() async {

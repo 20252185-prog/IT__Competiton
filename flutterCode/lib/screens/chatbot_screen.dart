@@ -31,16 +31,22 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     _initAi();
   }
 
-  // 💡 API 키 없이 Firebase 인증으로 바로 AI 연결!
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    _scrollCtrl.dispose();
+    super.dispose();
+  }
+
+  // 별도 API 키 없이 Firebase 인증으로 AI에 연결한다.
   void _initAi() {
     try {
       _model = FirebaseAI.googleAI().generativeModel(
         model: 'gemini-3.6-flash',
       );
       _chatSession = _model!.startChat();
-      print('✅ Firebase Gemini AI가 성공적으로 초기화되었습니다!');
     } catch (e) {
-      print('❌ AI 초기화 실패: $e');
+      debugPrint('AI 초기화 실패: $e');
     }
   }
 
@@ -55,9 +61,12 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     _ctrl.clear();
     _scrollToBottom();
 
+    // 응답을 기다리는 동안 사용자가 챗봇 창을 닫을 수 있으므로
+    // await 이후에는 항상 mounted를 확인한 뒤 setState를 호출한다.
     try {
       if (_chatSession != null) {
         final response = await _chatSession!.sendMessage(Content.text(text));
+        if (!mounted) return;
         setState(() {
           _messages.add({
             'from': 'bot',
@@ -73,21 +82,25 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         });
       }
     } catch (e) {
-      print('❌ 메세지 전송 실패: $e');
+      debugPrint('메시지 전송 실패: $e');
+      if (!mounted) return;
       setState(() {
         _messages.add({'from': 'bot', 'text': '오류가 발생했습니다: $e'});
       });
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
-      _scrollToBottom();
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        _scrollToBottom();
+      }
     }
   }
 
   void _scrollToBottom() {
     Future.delayed(const Duration(milliseconds: 100), () {
-      if (_scrollCtrl.hasClients) {
+      // dispose 이후 콜백이 도착하면 컨트롤러 접근에서 예외가 나므로 함께 확인.
+      if (mounted && _scrollCtrl.hasClients) {
         _scrollCtrl.animateTo(
           _scrollCtrl.position.maxScrollExtent,
           duration: const Duration(milliseconds: 300),

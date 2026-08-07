@@ -34,10 +34,11 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-  google_generative_ai: ^0.4.7
+
+  # 체크리스트/비상연락처를 기기에 저장하는 데 사용
   shared_preferences: ^2.2.2
 
-  # 챗봇(Gemini) 연동에 필요한 Firebase 패키지 — 코드에서 import하므로 필수
+  # 챗봇(Gemini) 연동용 Firebase 패키지
   firebase_core: ^4.12.1
   firebase_ai: ^3.14.1
 
@@ -92,4 +93,4 @@ flutter:
   #         weight: 700
   #
   # For details regarding fonts from package dependencies,
-  # see https://flutter.Get-Content pubspec.yamldev/to/font-from-package
+  # see https://flutter.dev/to/font-from-package

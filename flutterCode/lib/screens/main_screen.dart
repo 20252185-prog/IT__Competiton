@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 
-// 📁 개별 탭 및 화면 파일 불러오기
-import 'housing_tab.dart';     // 🏠 주거 (기본용어, 체크리스트, 트러블슈팅, 계약서팁)
-import 'assets_tab.dart';      // 💰 자산 (청약가이드, 정부지원금)
-import 'employment_tab.dart';  // 💼 취업 (근로계약서, 구직사이트)
-import 'more_tab.dart';        // 💬 더보기 (비상연락처 등)
-import 'chatbot_screen.dart';  // 🤖 AI 챗봇
+import 'housing_tab.dart';
+import 'assets_tab.dart';
+import 'employment_tab.dart';
+import 'more_tab.dart';
+import 'chatbot_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -16,10 +15,9 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  // 0: 주거, 1: 자산, 2: 취업, 3: 더보기
   int _selectedIndex = 0;
 
-  // 💡 정식 탭 화면 연결 (순서: 0-주거, 1-자산, 2-취업, 3-더보기)
+  // 하단 탭 순서: 0-주거, 1-자산, 2-취업, 3-더보기
   final List<Widget> _pages = const [
     HousingTab(),
     AssetsTab(),
@@ -27,7 +25,7 @@ class _MainScreenState extends State<MainScreen> {
     MoreTab(),
   ];
 
-  // 💬 하단 동그란 챗봇 버튼 클릭 이벤트
+  // 챗봇 버튼을 누르면 화면 하단에서 올라오는 시트로 챗봇을 띄운다.
   void _openChatbot() {
     showModalBottomSheet(
       context: context,
@@ -60,7 +58,6 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
 
-      // 💬 하단 오른쪽 둥근 제미나이 AI 챗봇 버튼
       floatingActionButton: FloatingActionButton(
         onPressed: _openChatbot,
         backgroundColor: const Color(0xFF1E4276),
@@ -73,7 +70,6 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
 
-      // 📱 하단 4개 네비게이션 탭 바
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {

@@ -40,10 +40,10 @@
 
 | Member | Main Role | Responsibilities |
 | --- | --- | --- |
-| 👑 **황세원**<br>`SW313131` | `Leader` `Planner` | • 팀 리딩 및 프로젝트 총괄<br>• 서비스 기획 및 발표/문서 작성<br>• Figma UI/UX 디자인 및 자료 조사 |
-| **윤서연**<br>`20252192-maker` | `Frontend` `Design` | • Flutter 프론트엔드 UI/UX 개발<br>• Flutter 코드 구조 개선 및 기능별 모듈화 (화면·상수·데이터·위젯 분리)<br>• Gemini API 연동 보조<br>• Figma UI/UX 디자인 및 서비스 기획·자료 조사 |
-| **안예원**<br>`20252185-prog` | `Backend` `Design` | • Firebase 및 Gemini API 연동 구축<br>• GitHub 레포지토리 관리 및 Flutter 개발 지원<br>• Figma 디자인 및 자료 조사 |
-| **김유진**<br>`yj2157` | `Planner` `Design` | • 서비스 핵심 아이디어 기획 및 Figma 디자인<br>• Flutter 더보기 비상연락처 탭 UI 개발 및 기능 보완<br>• 관련 자료 조사 및 서비스 컨셉 수립 |
+| 👑 **황세원**<br>`SW313131` | Project Leader | • 팀 리딩 및 프로젝트 총괄<br>• 서비스 기획 및 발표/문서 작성<br>• Figma UI/UX 디자인 및 자료 조사 |
+| **윤서연**<br>`20252192-maker` | Frontend Developer | • Flutter 프론트엔드 전반 UI/UX 및 기능 개발<br>• Flutter 코드 구조 개선 및 기능별 모듈화 (화면·상수·데이터·위젯 분리)<br>• Gemini API 연동 보조<br>• Figma UI/UX 디자인 및 서비스 기획·자료 조사 |
+| **안예원**<br>`20252185-prog` | AI / Technical Developer | • Firebase 및 Gemini API 연동 구축<br>• GitHub 레포지토리 관리 및 Flutter 개발 지원<br>• Figma 디자인 및 자료 조사 |
+| **김유진**<br>`yj2157` | Planner / UI·UX Designer | • 서비스 핵심 아이디어 기획 및 Figma 디자인<br>• Flutter 더보기 비상연락처 탭 UI 개발 및 기능 보완<br>• 관련 자료 조사 및 서비스 컨셉 수립 |
 ---
 
 ## 🛠 Tech Stack
@@ -64,10 +64,9 @@
 * **Firebase AI Logic**을 연동하여 **Google Gemini Developer API** 기반의 맞춤형 AI 챗봇 기능을 완성하였습니다.
 * Samsung Galaxy Tab 실기기 환경에서 개발 및 최종 테스트를 진행하였습니다.
 
-| 시연 1 | 시연 2 |
+| | |
 | :---: | :---: |
 | <img src="https://github.com/user-attachments/assets/c94543aa-9912-4168-9802-81eb39b5f2fd" width="350"> | <img src="https://github.com/user-attachments/assets/4a0ee8b1-e1ed-4f2b-a299-b981fc0c1025" width="350"> |
-| **시연 3** | **시연 4** |
 | <img src="https://github.com/user-attachments/assets/73e6fb66-5f7f-4429-85a0-39f2c3f347de" width="350"> | <img src="https://github.com/user-attachments/assets/16331f58-0733-4101-a4e8-7557e6729236" width="350"> |
 
 

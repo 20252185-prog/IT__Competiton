@@ -64,10 +64,11 @@
 * **Firebase AI Logic**을 연동하여 **Google Gemini Developer API** 기반의 맞춤형 AI 챗봇 기능을 완성하였습니다.
 * Samsung Galaxy Tab 실기기 환경에서 개발 및 최종 테스트를 진행하였습니다.
 
-<img width="1179" height="1823" alt="시연이미지1" src="https://github.com/user-attachments/assets/c94543aa-9912-4168-9802-81eb39b5f2fd" />
-<img width="1179" height="1810" alt="시연이미지2" src="https://github.com/user-attachments/assets/4a0ee8b1-e1ed-4f2b-a299-b981fc0c1025" />
-<img width="1179" height="1816" alt="시연이미지3" src="https://github.com/user-attachments/assets/73e6fb66-5f7f-4429-85a0-39f2c3f347de" />
-<img width="1179" height="1819" alt="시연이미지4" src="https://github.com/user-attachments/assets/16331f58-0733-4101-a4e8-7557e6729236" />
+| 시연 1 | 시연 2 |
+| :---: | :---: |
+| <img src="https://github.com/user-attachments/assets/c94543aa-9912-4168-9802-81eb39b5f2fd" width="350"> | <img src="https://github.com/user-attachments/assets/4a0ee8b1-e1ed-4f2b-a299-b981fc0c1025" width="350"> |
+| **시연 3** | **시연 4** |
+| <img src="https://github.com/user-attachments/assets/73e6fb66-5f7f-4429-85a0-39f2c3f347de" width="350"> | <img src="https://github.com/user-attachments/assets/16331f58-0733-4101-a4e8-7557e6729236" width="350"> |
 
 
 

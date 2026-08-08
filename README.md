@@ -41,7 +41,7 @@
 | Member | Main Role | Responsibilities |
 | --- | --- | --- |
 | 👑 **황세원**<br>`SW313131` | `Leader` `Planner` | • 팀 리딩 및 프로젝트 총괄<br>• 서비스 기획 및 발표/문서 작성<br>• Figma UI/UX 디자인 및 자료 조사 |
-| **윤서연**<br>`20252192-maker` | `Frontend` `Design` | • Flutter 프론트엔드 UI/UX 개발<br>• Gemini API 연동 보조<br>• Figma UI/UX 디자인<br>• 서비스 기획 및 자료 조사 |
+| **윤서연**<br>`20252192-maker` | `Frontend` `Design` | • Flutter 프론트엔드 UI/UX 개발<br>• Flutter 코드 구조 개선 및 기능별 모듈화 (화면·상수·데이터·위젯 분리)<br>• Gemini API 연동 보조<br>• Figma UI/UX 디자인 및 서비스 기획·자료 조사 |
 | **안예원**<br>`20252185-prog` | `Backend` `Design` | • Firebase 및 Gemini API 연동 구축<br>• GitHub 레포지토리 관리 및 Flutter 개발 지원<br>• Figma 디자인 및 자료 조사 |
 | **김유진**<br>`yj2157` | `Planner` `Design` | • 서비스 핵심 아이디어 기획 및 Figma 디자인<br>• Flutter 더보기 비상연락처 탭 UI 개발 및 기능 보완<br>• 관련 자료 조사 및 서비스 컨셉 수립 |
 ---
@@ -64,9 +64,12 @@
 * **Firebase AI Logic**을 연동하여 **Google Gemini Developer API** 기반의 맞춤형 AI 챗봇 기능을 완성하였습니다.
 * Samsung Galaxy Tab 실기기 환경에서 개발 및 최종 테스트를 진행하였습니다.
 
-<img width="373" height="498" alt="image" src="https://github.com/user-attachments/assets/ac88aab3-320a-4321-b8e9-77b9271ead6c" />
-<img width="400" height="500" alt="image" src="https://github.com/user-attachments/assets/bbd79802-b95d-43d3-b89b-4959d422d29f" />
-ed" /><img width="367" height="500" alt="image" src="https://github.com/user-attachments/assets/16163b3c-77dc-4d26-acfc-c64a60dfacdc" />
-<img width="380" height="495" alt="image" src="https://github.com/user-attachments/assets/1dfb2ef0-f479-4e96-bc2b-ad915dea980e" />
+<img width="1179" height="1823" alt="시연이미지1" src="https://github.com/user-attachments/assets/c94543aa-9912-4168-9802-81eb39b5f2fd" />
+<img width="1179" height="1810" alt="시연이미지2" src="https://github.com/user-attachments/assets/4a0ee8b1-e1ed-4f2b-a299-b981fc0c1025" />
+<img width="1179" height="1816" alt="시연이미지3" src="https://github.com/user-attachments/assets/73e6fb66-5f7f-4429-85a0-39f2c3f347de" />
+<img width="1179" height="1819" alt="시연이미지4" src="https://github.com/user-attachments/assets/16331f58-0733-4101-a4e8-7557e6729236" />
+
+
+
 
 

@@ -36,6 +36,44 @@
 
 ---
 
+## 🛠 Tech Stack
+
+- **Frontend:** Flutter (Dart)
+- **Backend & Platform:** Firebase
+- **AI Model / API:** Google Gemini Developer API
+- **Design & Tools:** Figma, GitHub, VS Code
+- **Test Device:** Samsung Galaxy Tab (Android)
+
+---
+
+  ## 📁 프로젝트 구조
+
+```text
+lib/
+├── constants/             # 앱 공통 디자인 상수
+│   └── colors.dart
+├── models/                # 앱 데이터 및 모델
+│   └── app_data.dart
+├── screens/               # 주요 화면
+│   ├── assets_tab.dart
+│   ├── chatbot_screen.dart
+│   ├── employment_tab.dart
+│   ├── housing_tab.dart
+│   ├── main_screen.dart
+│   └── more_tab.dart
+├── widgets/               # 재사용 가능한 UI 컴포넌트
+│   ├── accordion_item.dart
+│   ├── app_card.dart
+│   ├── back_button.dart
+│   ├── grid_menu_card.dart
+│   ├── section_header.dart
+│   └── tag_badge.dart
+├── firebase_options.dart  # Firebase 프로젝트 설정
+└── main.dart              # 앱 진입점
+```
+
+---
+
 ## 👥 Members & Roles
 
 | Member | Main Role | Responsibilities |
@@ -46,13 +84,6 @@
 | **김유진**<br>`yj2157` | Planner / UI·UX Designer | • 서비스 핵심 아이디어 기획 및 Figma 디자인<br>• Flutter 더보기 비상연락처 탭 UI 개발 및 기능 보완<br>• 관련 자료 조사 및 서비스 컨셉 수립 |
 ---
 
-## 🛠 Tech Stack
-
-- **Frontend:** Flutter (Dart)
-- **Backend & Platform:** Firebase
-- **AI Model / API:** Google Gemini Developer API
-- **Design & Tools:** Figma, GitHub, VS Code
-- **Test Device:** Samsung Galaxy Tab (Android)
 
 ---
 

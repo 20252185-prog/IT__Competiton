@@ -326,12 +326,12 @@ final List<Map<String, dynamic>> jobCategories = [
 ];
 
 final jobSites = [
-  {'name': '사람인', 'symbol': 'S', 'color': 0xFFE8192C},
-  {'name': '잡코리아', 'symbol': 'JK', 'color': 0xFF0057B8},
-  {'name': '원티드', 'symbol': 'W', 'color': 0xFF355C7D},
-  {'name': '워크넷', 'symbol': 'W', 'color': 0xFF00863C},
-  {'name': '고용24', 'symbol': '24', 'color': 0xFF1C4D9B},
-  {'name': '링크드인', 'symbol': 'in', 'color': 0xFF0A66C2},
+  {'name': '사람인', 'symbol': 'S', 'color': 0xFFE8192C, 'url': 'https://www.saramin.co.kr'},
+  {'name': '잡코리아', 'symbol': 'JK', 'color': 0xFF0057B8, 'url': 'https://www.jobkorea.co.kr'},
+  {'name': '원티드', 'symbol': 'W', 'color': 0xFF355C7D, 'url': 'https://www.wanted.co.kr'},
+  {'name': '워크넷', 'symbol': 'W', 'color': 0xFF00863C, 'url': 'https://www.work.go.kr'},
+  {'name': '고용24', 'symbol': '24', 'color': 0xFF1C4D9B, 'url': 'https://www.work24.go.kr'},
+  {'name': '링크드인', 'symbol': 'in', 'color': 0xFF0A66C2, 'url': 'https://www.linkedin.com'},
 ];
 
 final defaultContacts = [

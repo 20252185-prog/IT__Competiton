@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../constants/colors.dart';
 import '../models/app_data.dart';
 import '../widgets/app_card.dart';
@@ -14,6 +15,16 @@ class EmploymentTab extends StatefulWidget {
 
 class _EmploymentTabState extends State<EmploymentTab> {
   String? _activeSection;
+
+  // 구직 사이트 아이콘을 누르면 외부 브라우저로 연다.
+  Future<void> _openUrl(String? url) async {
+    if (url == null) return;
+    try {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } catch (e) {
+      debugPrint('링크 열기 실패: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +177,10 @@ class _EmploymentTabState extends State<EmploymentTab> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 children: jobSites.map((site) {
-                  return Column(
+                  return GestureDetector(
+                    onTap: () => _openUrl(site['url'] as String?),
+                    behavior: HitTestBehavior.opaque,
+                    child: Column(
                     children: [
                       Container(
                         width: 44, height: 44,
@@ -185,6 +199,7 @@ class _EmploymentTabState extends State<EmploymentTab> {
                       const SizedBox(height: 6),
                       Text(site['name'] as String, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: kForeground), textAlign: TextAlign.center),
                     ],
+                    ),
                   );
                 }).toList(),
               ),

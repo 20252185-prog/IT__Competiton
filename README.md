@@ -42,7 +42,7 @@
 ## 🛠 Tech Stack
 
 - **Frontend:** Flutter (Dart)
-- **Backend & Platform:** Firebase
+- **Backend & Platform:** Firebase(Firebase AI Logic)
 - **AI Model / API:** Google Gemini Developer API
 - **Design & Tools:** Figma, GitHub, VS Code
 - **Test Device:** Samsung Galaxy Tab (Android)

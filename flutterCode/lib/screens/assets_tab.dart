@@ -208,6 +208,17 @@ class _AssetsTabState extends State<AssetsTab> {
       children: [
         BackButton2(label: '자산', onTap: () => setState(() => _activeSection = null)),
         const SectionHeader(title: '확인해야 할 정부 지원금', subtitle: '주요 정부 지원금 3가지 상세 안내'),
+        const Padding(
+          padding: EdgeInsets.only(bottom: 12),
+          child: Text(
+            '* 신청 전 공식 기관의 최신 공고 재확인 요망 *',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFFDC2626),
+            ),
+          ),
+        ),
         ...List.generate(governmentPolicies.length, (index) {
           final policy = governmentPolicies[index];
           final isExpanded = _expandedPolicies.contains(index);

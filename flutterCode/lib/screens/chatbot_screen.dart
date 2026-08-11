@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../constants/colors.dart';
 
 class ChatbotScreen extends StatefulWidget {
@@ -25,6 +27,15 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   final _ctrl = TextEditingController();
   final _scrollCtrl = ScrollController();
 
+  // 말풍선 안 링크의 탭 인식기들. 빌드마다 새로 만들고 이전 것은 정리한다.
+  final List<TapGestureRecognizer> _linkRecognizers = [];
+
+  // http(s) URL 또는 스킴 없는 도메인(applyhome.co.kr, housing.seoul.go.kr 등)을 인식.
+  static final RegExp _urlPattern = RegExp(
+    r'(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9][a-zA-Z0-9.-]*\.(?:go\.kr|co\.kr|or\.kr|com|net|org|io|kr)(?:\/[^\s]*)?',
+    caseSensitive: false,
+  );
+
   @override
   void initState() {
     super.initState();
@@ -35,7 +46,56 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   void dispose() {
     _ctrl.dispose();
     _scrollCtrl.dispose();
+    for (final r in _linkRecognizers) {
+      r.dispose();
+    }
     super.dispose();
+  }
+
+  // 링크(또는 스킴 없는 도메인)를 외부 브라우저로 연다.
+  Future<void> _openUrl(String raw) async {
+    var s = raw.replaceAll(RegExp(r'[.,)\]]+$'), ''); // 뒤 문장부호 제거
+    if (!s.startsWith('http')) s = 'https://$s';
+    final uri = Uri.tryParse(s);
+    if (uri == null) return;
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      debugPrint('링크 열기 실패: $e');
+    }
+  }
+
+  // 메시지 텍스트에서 URL만 탭 가능한 링크로 바꿔 렌더링한다.
+  // 기존 텍스트 스타일(크기·색·줄간격)은 그대로 유지한다.
+  Widget _buildMessageText(String text, bool isUser) {
+    final baseStyle = TextStyle(
+      fontSize: 13,
+      color: isUser ? Colors.white : kForeground,
+      height: 1.5,
+    );
+    final linkStyle = baseStyle.copyWith(
+      color: isUser ? Colors.white : kPrimary,
+      decoration: TextDecoration.underline,
+      fontWeight: FontWeight.w600,
+    );
+
+    final spans = <InlineSpan>[];
+    int last = 0;
+    for (final m in _urlPattern.allMatches(text)) {
+      if (m.start > last) {
+        spans.add(TextSpan(text: text.substring(last, m.start)));
+      }
+      final url = m.group(0)!;
+      final recognizer = TapGestureRecognizer()..onTap = () => _openUrl(url);
+      _linkRecognizers.add(recognizer);
+      spans.add(TextSpan(text: url, style: linkStyle, recognizer: recognizer));
+      last = m.end;
+    }
+    if (last < text.length) {
+      spans.add(TextSpan(text: text.substring(last)));
+    }
+
+    return Text.rich(TextSpan(style: baseStyle, children: spans));
   }
 
   // 별도 API 키 없이 Firebase 인증으로 AI에 연결한다.
@@ -43,6 +103,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     try {
       _model = FirebaseAI.googleAI().generativeModel(
         model: 'gemini-3.6-flash',
+        systemInstruction: Content.system('사회초년생의 주거·자산·취업·청년정책 관련 질문에만 답하고, 벗어난 질문은 정중히 거절.정확한 마감·신청기간은 공고/공식 링크에서 확인할 수 있도록 사이트 안내해주기. 단, URL 지어내지 말 것'),
       );
       _chatSession = _model!.startChat();
     } catch (e) {
@@ -112,6 +173,12 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // 이전 빌드에서 만든 링크 탭 인식기를 정리하고, 이번 빌드에서 다시 만든다.
+    for (final r in _linkRecognizers) {
+      r.dispose();
+    }
+    _linkRecognizers.clear();
+
     return Container(
       color: kBackground,
       child: Column(
@@ -193,10 +260,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                             ),
                             border: isUser ? null : Border.all(color: kBorder),
                           ),
-                          child: Text(
-                            msg['text']!,
-                            style: TextStyle(fontSize: 13, color: isUser ? Colors.white : kForeground, height: 1.5),
-                          ),
+                          child: _buildMessageText(msg['text']!, isUser),
                         ),
                       ),
                     ],

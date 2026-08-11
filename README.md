@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="앱아이콘.png" width="120">
+  <img src="./app_icon.png" width="120" alt="걸어서 사회 속으로 앱 아이콘">
 </p>
 
 # 📱 "걸어서 사회 속으로" - 사회초년생 맞춤형 자립 지원 플랫폼

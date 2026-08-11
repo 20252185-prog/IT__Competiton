@@ -1,7 +1,10 @@
-# 📱 사회초년생 맞춤형 자립 지원 플랫폼
+<p align="center">
+  <img src="./app_icon.png" width="120" alt="걸어서 사회 속으로 앱 아이콘">
+</p>
 
-사회에 첫발을 내딛는 청년 및 사회초년생을 위한 **주거·자산·취업 통합 가이드 모바일 애플리케이션(android)**입니다.
+# "걸어서 사회 속으로" - 사회초년생 맞춤형 자립 지원 플랫폼
 
+> 사회에 첫발을 내딛는 청년과 사회초년생에게 흩어져 있는 **주거·자산·취업 정보를 한 곳에서 제공하여, 정보 탐색의 부담을 줄이고 안정적인 자립을 지원하는 통합 가이드 애플리케이션(Android)**입니다.
 ---
 
 ## 🚀 주요 기능 (Features)
@@ -39,7 +42,7 @@
 ## 🛠 Tech Stack
 
 - **Frontend:** Flutter (Dart)
-- **Backend & Platform:** Firebase
+- **Backend & Platform:** Firebase(Firebase AI Logic)
 - **AI Model / API:** Google Gemini Developer API
 - **Design & Tools:** Figma, GitHub, VS Code
 - **Test Device:** Samsung Galaxy Tab (Android)

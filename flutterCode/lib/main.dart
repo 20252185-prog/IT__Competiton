@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'firebase_options.dart';
 import 'constants/colors.dart';
 import 'screens/main_screen.dart';
@@ -13,6 +14,14 @@ void main() async {
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    // App Check 활성화. AI(Gemini)를 부르기 전에 실행돼야 토큰이 함께 전송된다.
+    // 개발 중에는 debug 프로바이더 사용 → 실행 로그에 뜨는 디버그 토큰을
+    // Firebase 콘솔 > App Check > 디버그 토큰 관리에 등록해야 통과된다.
+    // 실제 배포 시에는 AndroidProvider.playIntegrity 로 교체.
+    await FirebaseAppCheck.instance.activate(
+      androidProvider: AndroidProvider.debug,
     );
   } catch (e, s) {
     debugPrint('⚠️ Firebase 초기화 실패 (챗봇 기능 비활성화): $e');

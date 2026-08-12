@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../constants/colors.dart';
 import '../models/app_data.dart';
 import '../widgets/app_card.dart';
@@ -34,6 +35,17 @@ class _MoreTabState extends State<MoreTab> {
     _nameCtrl.dispose();
     _numberCtrl.dispose();
     super.dispose();
+  }
+
+  // 연락처를 누르면 기기 전화 앱으로 바로 연결(다이얼)한다.
+  Future<void> _callNumber(String number) async {
+    final tel = number.replaceAll(RegExp(r'[^0-9+]'), '');
+    if (tel.isEmpty) return;
+    try {
+      await launchUrl(Uri.parse('tel:$tel'));
+    } catch (e) {
+      debugPrint('전화 연결 실패: $e');
+    }
   }
 
   // 기기에 저장해 둔 연락처를 불러와 기본 연락처 뒤에 이어붙임.
@@ -201,7 +213,10 @@ class _MoreTabState extends State<MoreTab> {
             final c = entry.value;
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),
-              child: Container(
+              child: GestureDetector(
+                onTap: () => _callNumber(c['number']!),
+                behavior: HitTestBehavior.opaque,
+                child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(color: kCard, borderRadius: BorderRadius.circular(12), border: Border.all(color: kBorder)),
                 child: Row(
@@ -230,6 +245,7 @@ class _MoreTabState extends State<MoreTab> {
                     ],
                   ],
                 ),
+              ),
               ),
             );
           }),
